@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+var loginController = require('../controllers/login');
+
+// 登录
+router.post('/login', loginController.login);
 
 module.exports = router;

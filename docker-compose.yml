@@ -1,0 +1,75 @@
+version: '3.3'
+services:
+  wehpu-engine1:
+    build: .
+    ports:
+      - 3000
+    volumes:
+      - .:/usr/src/app
+    restart: always
+    links:
+      - mongodb-master
+      - mongodb-slave1
+      - mongodb-slave2
+
+  wehpu-engine2:
+    build: .
+    ports:
+      - 3000
+    volumes:
+      - .:/usr/src/app
+    restart: always
+    links:
+      - mongodb-master
+      - mongodb-slave1
+      - mongodb-slave2
+
+  wehpu-engine3:
+    build: .
+    ports:
+      - 3000
+    volumes:
+      - .:/usr/src/app
+    restart: always
+    links:
+      - mongodb-master
+      - mongodb-slave1
+      - mongodb-slave2
+
+  mongodb-master:
+    build: ./builds/mongo
+    restart: always
+    volumes:
+      - /data/mongodb-wehpu/mongodb-master:/data/db
+    environment:
+      ROLE: mongodb-master
+      SLAVE1: mongodb-slave1
+      SLAVE2: mongodb-slave2
+    hostname: mongodb-master
+    container_name: mongodb-master
+
+  mongodb-slave1:
+    build: ./builds/mongo
+    restart: always
+    volumes:
+      - /data/mongodb-wehpu/mongodb-slave1:/data/db
+    hostname: mongodb-slave1
+    container_name: mongodb-slave1
+
+  mongodb-slave2:
+    build: ./builds/mongo
+    restart: always
+    volumes:
+      - /data/mongodb-wehpu/mongodb-slave2:/data/db
+    hostname: mongodb-slave2
+    container_name: mongodb-slave2
+
+  load-balance:
+    build: ./builds/haproxy
+    restart: always
+    ports:
+      - 4000:3000
+    links:
+      - wehpu-engine1
+      - wehpu-engine2
+      - wehpu-engine3
