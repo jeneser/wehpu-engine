@@ -14,7 +14,7 @@ var mongoose = require('mongoose');
  * Connect mongodb
  */
 
-mongoose.connect(config.mongodb, { useMongoClient: true });
+mongoose.connect(config.mongodb, { useMongoClient: true, connectWithNoPrimary: true });
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Mongodb connection error: '));

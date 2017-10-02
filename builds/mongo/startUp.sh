@@ -8,9 +8,6 @@ MONGOD="/usr/bin/mongod"
 
 $MONGOD --fork --replSet wehpu --noprealloc --smallfiles --dbpath /data/db --logpath $MONGO_LOG
 
-echo "Waiting for mongo to come up..."
-sleep 15
-
 if [ "$ROLE" == "mongodb-master" ]
 then
 $MONGO --eval "rs.initiate({
