@@ -8,11 +8,8 @@ var config = {
   port: process.env.PORT || '3000',
 
   // mongodb
-  // mongodb:
-  //   'mongodb://mongodb-master:27017,mongodb-slave1:27017,mongodb-slave2:27017/wehpu?replicaSet=wehpu',
-
   mongodb:
-    'mongodb://mongodb-master:27017/wehpu',
+    'mongodb://mongodb-master:27017,mongodb-slave1:27017,mongodb-slave2:27017/wehpu?replicaSet=wehpu',
 
   // 小程序ID，需妥善保管!
   appId: '',
