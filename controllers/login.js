@@ -22,19 +22,19 @@ exports.login = function(req, res, next) {
       js_code: code,
       grant_type: 'authorization_code'
     })
-    .then(res => {
-      // 解密用户信息
-      var openid = res.openid;
-      var pc = new WXBizDataCrypt(config.appId, res.session_key);
-      var data = pc.decryptData(encryptedData, iv);
+    .then(loginInfo => {
+      var loginInfo = JSON.parse(loginInfo.text);
 
-      // return {
-      //   openid: openid,
-      //   data: data
-      // }
+      // 解密用户信息
+      var openid = loginInfo.openid;
+      var pc = new WXBizDataCrypt(config.appId, loginInfo.session_key);
+      var userInfo = pc.decryptData(encryptedData, iv);
+
       res.status(200).json({
-        data: data,
-        openid: openid
+        openid: userInfo.openid,
+        nickName: userInfo.nickName,
+        avatarUrl: userInfo.avatarUrl
       });
-    });
+    })
+    .catch(err => console.log(err));
 };
