@@ -14,6 +14,9 @@ RUN npm install \
     && apt-get install -y graphicsmagick \
     && apt-get install -y imagemagick
 
+# Copy traineddata
+COPY ./ocr/hpu.traineddata /usr/share/tesseract-ocr/tessdata
+
 # Bundle app source
 # COPY . .
 
