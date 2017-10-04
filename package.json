@@ -17,6 +17,7 @@
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "gm": "^1.23.0",
+    "jsonwebtoken": "^8.0.1",
     "mongoose": "^4.11.13",
     "morgan": "~1.8.1",
     "node-tesseract": "^0.2.7",

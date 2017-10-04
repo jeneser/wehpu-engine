@@ -11,14 +11,17 @@ var config = {
   mongodb:
     'mongodb://mongodb-master:27017,mongodb-slave1:27017,mongodb-slave2:27017/wehpu?replicaSet=wehpu',
 
-  // 小程序ID，需妥善保管!
+  // 小程序ID 需妥善保管!
   appId: '',
 
-  // 小程序密钥，需妥善保管!
-  AppSecret: '',
+  // 小程序密钥 需妥善保管!
+  appSecret: '',
 
   // code换取session_key接口
-  jscode2session: 'https://api.weixin.qq.com/sns/jscode2session'
+  jscode2session: 'https://api.weixin.qq.com/sns/jscode2session',
+
+  // json web token 需妥善保管!
+  jwtSecret: ''
 };
 
 module.exports = config;

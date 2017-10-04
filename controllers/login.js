@@ -1,14 +1,15 @@
 var config = require('../config');
 var WXBizDataCrypt = require('../vendor/WXBizDataCrypt');
 var request = require('superagent');
+var jwt = require('jsonwebtoken');
 
 var User = require('../models/user');
 
 /**
  * 用户登录
- * code: 用户登录凭证
- * encryptedData: 包括敏感数据在内的完整用户信息的加密数据
- * iv: 加密算法的初始向量
+ * @param {*} code 用户登录凭证
+ * @param {*} encryptedData 包括敏感数据在内的完整用户信息的加密数据
+ * @param {*} iv 加密算法的初始向量
  */
 exports.login = function (req, res, next) {
   var code = req.body.code;
@@ -18,7 +19,7 @@ exports.login = function (req, res, next) {
   if (!code && !encryptedData && !iv) {
     res.status(400).json({
       code: 400,
-      errMsg: '请求格式错误！'
+      errMsg: '请求格式错误'
     });
   }
 
@@ -27,7 +28,7 @@ exports.login = function (req, res, next) {
     .get(config.jscode2session)
     .query({
       appid: config.appId,
-      secret: config.AppSecret,
+      secret: config.appSecret,
       js_code: code,
       grant_type: 'authorization_code'
     })
@@ -46,8 +47,17 @@ exports.login = function (req, res, next) {
       User.findOne({
         openid: userInfo.openid
       }, (err, person) => {
+
+        // 生成会话token，有效期7天
+        var token = jwt.sign({
+          openid: userInfo.openid,
+          nickName: userInfo.nickName
+        }, config.jwtSecret, {
+          expiresIn: '7d'
+        });
+
         if (err) {
-          // 不存在，注册并返回绑定信息
+          // 不存在，注册并返回绑定信息和token
           new User({
               openid: userInfo.openid,
               nickName: userInfo.nickName,
@@ -57,31 +67,33 @@ exports.login = function (req, res, next) {
               bind: false
             })
             .save()
-            .then(val => {
+            .then(() => {
               res.status(201).json({
                 code: 201,
                 msg: '登录成功',
                 data: {
-                  bind: false
+                  bind: false,
+                  token: token
                 }
               });
             });
         } else {
-          // 已存在，返回绑定信息
+          // 已存在，返回绑定信息和token
           res.status(200).json({
             code: 200,
             msg: '登录成功',
             data: {
-              bind: person.bind
+              bind: person.bind,
+              token: token
             }
           });
         }
       });
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).json({
         code: 500,
-        errMsg: '登录出错，请联系开发人员！'
+        errMsg: '登录出错，请联系开发人员'
       });
     });
 };

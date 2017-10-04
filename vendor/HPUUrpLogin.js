@@ -10,7 +10,6 @@
  * 
  * ocr
  * Tesseract自动识别教务处URP系统验证码
- * 目前识别率70%左右
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/jeneser/rsa-node
  */
@@ -86,7 +85,7 @@ var config = {
 
 /**
  * 自动识别URP系统验证码
- * 目前识别率70%左右，最多三次可识别成功
+ * 递归识别，确保返回正确数据
  * TODO: 训练更多数据以提高识别率
  * @param {*} verCode 原始验证码图片
  * @return {Promise} Promise()
@@ -94,13 +93,12 @@ var config = {
 function ocr(verCode, fileName) {
   var verCodePath = path.join(config.ocr.config.dist, fileName + config.ocr.config.suffix);
 
-  // 创建读写流
-  var verCodeReadStream = fs.createWriteStream(verCode);
+  // 创建写流
   var verCodeWriteStream = fs.createWriteStream(verCodePath);
 
   return new Promise((resolve, reject) => {
     // 处理图片
-    gm(verCodeReadStream)
+    gm(verCode)
       // 减少图像中的斑点
       .despeckle()
       // 调整对比度
@@ -116,11 +114,15 @@ function ocr(verCode, fileName) {
       // Tesseract-ocr识别验证码
       tesseract.process(verCodePath, config.ocr.options, (err, data) => {
         if (err) {
-          reject('识别验证码出错!');
+          reject('识别验证码出错');
         } else {
           var ver = new RegExp('^[a-zA-Z0-9]{4}$');
           if (ver.test(data.trim())) {
-            console.log('----res:----\n' + data);
+            // 删除临时文件
+            if (verCodePath) {
+              fs.unlink(verCodePath);
+            }
+            // 返回结果
             resolve(data.trim());
           } else {
             // 递归，再次识别
@@ -132,7 +134,7 @@ function ocr(verCode, fileName) {
 
     // 监听写入错误
     verCodeWriteStream.on('error', () => {
-      reject('无法写入磁盘!');
+      reject('无法写入磁盘');
     });
   });
 }
@@ -173,7 +175,7 @@ exports.login = function (studentId, vpnPassWord, jwcPassWord, url) {
         return agent.get(config.urpVerCode);
       })
       .then(verCodeData => {
-        return ocr(verCodeData.body);
+        return ocr(verCodeData.body, studentId);
       })
       // 登录URP
       .then(verCodeIdentified => {
@@ -201,9 +203,9 @@ exports.login = function (studentId, vpnPassWord, jwcPassWord, url) {
       .then(() => {
         return agent.get(url).charset('gbk');
       })
-      .catch(err => console.log('登陆失败!'))
+      .catch(err => console.log('登陆失败'))
     )
   } else {
-    console.log('参数错误!');
+    console.log('参数错误');
   }
 }

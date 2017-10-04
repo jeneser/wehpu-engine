@@ -72,6 +72,6 @@ exports.login = function (studentId, vpnPassWord, url) {
       .catch(err => console.log(err))
     )
   } else {
-    console.log('参数错误！');
+    console.log('参数错误');
   }
 }

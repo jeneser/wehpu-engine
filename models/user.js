@@ -17,6 +17,18 @@ var userSchema = new Schema({
   bind: {
     type: Boolean,
     default: false
+  },
+  studentId: {
+    type: String,
+    default: ''
+  },
+  vpnPassWord: {
+    type: String,
+    default: ''
+  },
+  jwcPassWord: {
+    type: String,
+    default: ''
   }
 
 });
