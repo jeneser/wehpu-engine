@@ -1,11 +1,15 @@
 /**
- * 模拟登录河南理工大学外网访问VPN
+ * 模拟登录河南理工大学外网访问VPN服务
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/hpufe/fsociety-hpu
+ * 
+ * rsa-node
+ * RSA加密算法库，用于加密VPN密码
+ * MIT Copyright (c) 2017 Jeneser
+ * Source: https://github.com/jeneser/rsa-node
  */
 
 var RsaNode = require('rsa-node');
-var cheerio = require('cheerio');
 var request = require('superagent');
 require('superagent-charset')(request);
 
@@ -32,7 +36,13 @@ var config = {
   }
 };
 
-exports.login = function (studentId, vpnPassWord) {
+/**
+ * 模拟登录
+ * @param {Number} studentId 学号/一卡通号
+ * @param {Number} vpnPassWord vpn密码
+ * @param {String} url 要访问的内网资源
+ */
+exports.login = function (studentId, vpnPassWord, url) {
   // 禁用https
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
@@ -44,7 +54,8 @@ exports.login = function (studentId, vpnPassWord) {
 
   if (studentId && vpnPassWord) {
     // 登录VPN
-    agent
+    return (
+      agent
       .post(config.vpnLoginUrl)
       .set(config.vpnLoginHeader)
       .type('form')
@@ -56,12 +67,10 @@ exports.login = function (studentId, vpnPassWord) {
       })
       .redirects()
       .then(() => {
-        return agent.get('https://vpn.hpu.edu.cn/por/service.csp');
+        return agent.get(url);
       })
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+    )
   } else {
     console.log('参数错误！');
   }
