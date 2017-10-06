@@ -21,14 +21,14 @@ router.post('/login', loginController.login);
  * @param {Number} studentId 学号/一卡通号
  * @param {Number} vpnPassWord vpn密码
  * @param {Number} jwcPassWord 教务处密码
- * @param {String} [openid] 包含在token中的openid
+ * @param {String} [openId] 包含在token中的openId
  */
 router.post('/binding', auth.ensureAuthorized, bindingController.binding);
 
 /**
  * 单用户查询
  * @method GET
- * @param {String} [openid] 包含在token中的openid
+ * @param {String} [openId] 包含在token中的openId
  */
 router.get('/userInfo', auth.ensureAuthorized, userController.user);
 

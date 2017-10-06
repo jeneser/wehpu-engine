@@ -37,7 +37,7 @@ exports.login = function(req, res, next) {
       var loginInfo = JSON.parse(loginInfo.text);
 
       // 解密用户信息
-      var openid = loginInfo.openid;
+      var openId = loginInfo.openId;
       var pc = new WXBizDataCrypt(config.appId, loginInfo.session_key);
       var userInfo = pc.decryptData(encryptedData, iv);
 
@@ -47,7 +47,7 @@ exports.login = function(req, res, next) {
       // 验证用户是否存在
       User.findOne(
         {
-          openid: userInfo.openid
+          openId: userInfo.openId
         },
         (err, person) => {
           if (err) {
@@ -60,7 +60,7 @@ exports.login = function(req, res, next) {
           // 生成会话token，有效期7天
           var token = jwt.sign(
             {
-              openid: userInfo.openid,
+              openId: userInfo.openId,
               nickName: userInfo.nickName
             },
             config.jwtSecret,
@@ -72,7 +72,7 @@ exports.login = function(req, res, next) {
           if (!person) {
             // 不存在，注册并返回绑定信息和token
             new User({
-              openid: userInfo.openid,
+              openId: userInfo.openId,
               nickName: userInfo.nickName,
               gender: userInfo.gender,
               city: userInfo.city,

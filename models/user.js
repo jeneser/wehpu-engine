@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
   // 微信用户基本信息
-  openid: String,
+  openId: String,
   nickName: String,
   gender: Number,
   city: String,

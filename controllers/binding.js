@@ -7,13 +7,13 @@ var User = require('../models/user');
  * @param {Number} studentId 学号/一卡通号
  * @param {Number} vpnPassWord vpn密码
  * @param {Number} jwcPassWord 教务处密码
- * @param {String} [openid] 包含在token中的openid
+ * @param {String} [openId] 包含在token中的openId
  */
 exports.binding = function(req, res, next) {
   var studentId = req.body.studentId;
   var vpnPassWord = req.body.vpnPassWord;
   var jwcPassWord = req.body.jwcPassWord;
-  var openid = req.jwtPayload.openid;
+  var openId = req.jwtPayload.openId;
 
   // 认证状态
   var authState = {
@@ -21,7 +21,7 @@ exports.binding = function(req, res, next) {
     jwc: false
   };
 
-  if (!studentId && !vpnPassWord && !jwcPassWord && !openid) {
+  if (!studentId && !vpnPassWord && !jwcPassWord && !openId) {
     res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误'
@@ -76,7 +76,7 @@ exports.binding = function(req, res, next) {
       retuen(
         User.update(
           {
-            openid: openid
+            openId: openId
           },
           {
             $set: {

@@ -3,12 +3,12 @@ var User = require('../models/user');
 /**
  * 单用户查询
  * @method GET
- * @param {String} [openid] 包含在token中的openid
+ * @param {String} [openId] 包含在token中的openId
  */
 exports.user = function (req, res, next) {
-  var openid = req.jwtPayload.openid;
+  var openId = req.jwtPayload.openId;
 
-  if (!openid) {
+  if (!openId) {
     res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误！'
@@ -17,7 +17,7 @@ exports.user = function (req, res, next) {
 
   // 查询用户
   User.findOne({
-    openid: openid
+    openId: openId
   })
     .then(person => {
       res.status(200).json({
