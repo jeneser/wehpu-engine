@@ -40,11 +40,6 @@ exports.binding = function(req, res, next) {
         if (/欢迎您/.test(serviceContent.text)) {
           resolve('访问成功');
         } else {
-          res.status(400).json({
-            statusCode: 400,
-            errMsg: '访问VPN失败',
-            data: authState
-          });
           reject('访问失败');
         }
       });
@@ -67,11 +62,6 @@ exports.binding = function(req, res, next) {
         if (/学籍信息/.test(urpContent.text)) {
           resolve('访问成功');
         } else {
-          res.status(400).json({
-            statusCode: 400,
-            errMsg: '访问URP失败',
-            data: authState
-          });
           reject('访问失败');
         }
       });
