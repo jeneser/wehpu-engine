@@ -19,7 +19,7 @@ exports.login = function(req, res, next) {
 
   if (!code && !encryptedData && !iv) {
     res.status(400).json({
-      code: 400,
+      statusCode: 400,
       errMsg: '请求格式错误'
     });
   }
@@ -52,7 +52,7 @@ exports.login = function(req, res, next) {
         (err, person) => {
           if (err) {
             res.status(500).json({
-              code: 500,
+              statusCode: 500,
               errMsg: '登录出错，请联系开发人员'
             });
           }
@@ -82,7 +82,7 @@ exports.login = function(req, res, next) {
               .save()
               .then(() => {
                 res.status(201).json({
-                  code: 201,
+                  statusCode: 201,
                   msg: '登录成功',
                   data: {
                     bind: false,
@@ -93,7 +93,7 @@ exports.login = function(req, res, next) {
           } else {
             // 已存在，返回绑定信息和token
             res.status(200).json({
-              code: 200,
+              statusCode: 200,
               msg: '登录成功',
               data: {
                 bind: person.bind,
@@ -106,7 +106,7 @@ exports.login = function(req, res, next) {
     })
     .catch(() => {
       res.status(500).json({
-        code: 500,
+        statusCode: 500,
         errMsg: '登录出错，请联系开发人员'
       });
     });

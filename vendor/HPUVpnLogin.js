@@ -69,9 +69,17 @@ exports.login = function (studentId, vpnPassWord, url) {
       .then(() => {
         return agent.get(url);
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        res.status(500).json({
+          statusCode: 500,
+          errMsg: 'VPN系统繁忙，请稍后重试'
+        });
+      })
     )
   } else {
-    console.log('参数错误');
+    res.status(400).json({
+      statusCode: 400,
+      errMsg: '参数错误'
+    });
   }
 }

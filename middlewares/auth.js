@@ -18,7 +18,7 @@ exports.ensureAuthorized = function (req, res, next) {
     jwt.verify(bearerToken, config.jwtSecret, (err, decoded) => {
       if (err) {
         res.status(403).json({
-          code: 403,
+          statusCode: 403,
           errMsg: '没有访问权限'
         });
       } else {
@@ -29,7 +29,7 @@ exports.ensureAuthorized = function (req, res, next) {
     });
   } else {
     res.status(403).json({
-      code: 403,
+      statusCode: 403,
       errMsg: '没有访问权限'
     });
   }

@@ -1,34 +1,35 @@
 var User = require('../models/user');
 
 /**
- * 用户查询，返回单个用户信息
- * openid: 用户openid
+ * 单用户查询
+ * @method GET
+ * @param {String} [openid] 包含在token中的openid
  */
 exports.user = function (req, res, next) {
-  var openid = req.params.openid;
+  var openid = req.jwtPayload.openid;
 
   if (!openid) {
     res.status(400).json({
-      code: 400,
-      msg: '请求格式错误！'
+      statusCode: 400,
+      errMsg: '请求格式错误！'
     })
   }
 
+  // 查询用户
   User.findOne({
     openid: openid
   })
     .then(person => {
       res.status(200).json({
-        code: 200,
+        statusCode: 200,
         msg: '查询成功',
         data: person
       });
     })
     .catch(err => {
       res.status(404).json({
-        code: 404,
-        msg: '用户不存在',
-        data: person
+        statusCode: 404,
+        errMsg: '用户不存在'
       });
     })
 }

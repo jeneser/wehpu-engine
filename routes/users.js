@@ -25,7 +25,11 @@ router.post('/login', loginController.login);
  */
 router.post('/binding', auth.ensureAuthorized, bindingController.binding);
 
-// 用户查询 [GET]
-// router.get('/:openid', auth.ensureAuthorized, userController.user);
+/**
+ * 单用户查询
+ * @method GET
+ * @param {String} [openid] 包含在token中的openid
+ */
+router.get('/userInfo', auth.ensureAuthorized, userController.user);
 
 module.exports = router;

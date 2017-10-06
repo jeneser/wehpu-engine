@@ -23,7 +23,7 @@ exports.binding = function (req, res, next) {
 
   if (!studentId && !vpnPassWord && !jwcPassWord && !openid) {
     res.status(400).json({
-      code: 400,
+      statusCode: 400,
       errMsg: '请求格式错误'
     });
   }
@@ -48,11 +48,13 @@ exports.binding = function (req, res, next) {
     })
     .then(urpContent => {
       // 匹配<学籍信息>关键字
-      if (/学籍信息/.test(urpContent.text)) {
-        return Promise.resolve('访问成功！');
-      } else {
-        return Promise.reject('访问失败！');
-      }
+      return new Promise((resolve, reject) => {
+        if (/学籍信息/.test(urpContent.text)) {
+          resolve('访问成功！');
+        } else {
+          reject('访问失败！');
+        }
+      })
     })
     .then(() => {
       authState.jwc = true;
@@ -73,21 +75,21 @@ exports.binding = function (req, res, next) {
         })
         .then(() => {
           res.status(201).json({
-            code: 201,
+            statusCode: 201,
             msg: '绑定成功',
             data: authState
           })
         })
         .catch(err => {
           res.status(500).json({
-            code: 500,
+            statusCode: 500,
             errMsg: '服务器内部错误，请联系开发人员'
           })
         })
     })
     .catch(err => {
       res.status(400).json({
-        code: 400,
+        statusCode: 400,
         errMsg: '认证失败',
         data: authState
       })

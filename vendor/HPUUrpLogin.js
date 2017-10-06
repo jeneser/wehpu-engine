@@ -203,9 +203,17 @@ exports.login = function (studentId, vpnPassWord, jwcPassWord, url) {
       .then(() => {
         return agent.get(url).charset('gbk');
       })
-      .catch(err => console.log('登陆失败'))
+      .catch(err => {
+        res.status(500).json({
+          statusCode: 500,
+          errMsg: '教务系统繁忙，请稍后重试'
+        });
+      })
     )
   } else {
-    console.log('参数错误');
+    res.status(400).json({
+      statusCode: 400,
+      errMsg: '参数错误'
+    });
   }
 }
