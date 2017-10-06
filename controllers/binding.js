@@ -56,6 +56,13 @@ exports.binding = function(req, res, next) {
         'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
       );
     })
+    .catch(err => {
+      res.status(400).json({
+        statusCode: 400,
+        errMsg: '访问URP出错',
+        data: authState
+      });
+    })
     .then(urpContent => {
       // 匹配<学籍信息>关键字
       return new Promise((resolve, reject) => {
