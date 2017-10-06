@@ -70,6 +70,9 @@ exports.login = function(studentId, vpnPassWord, url) {
         svpn_password: rsa.encrypt(vpnPassWord)
       })
       .redirects()
+      .catch(() => {
+        console.error('登陆VPN出错');
+      })
       .then(() => {
         return agent.get(url);
       });

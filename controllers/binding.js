@@ -29,7 +29,7 @@ exports.binding = function(req, res, next) {
   }
 
   // 认证VPN
-  var vpnLogin = HPUVpnLogin.login(
+  HPUVpnLogin.login(
     studentId,
     vpnPassWord,
     'https://vpn.hpu.edu.cn/por/service.csp'
@@ -46,15 +46,16 @@ exports.binding = function(req, res, next) {
     })
     .then(() => {
       authState.vpn = true;
-    });
-
-  // 认证URP
-  var urpLogin = HPUUrpLogin.login(
-    studentId,
-    vpnPassWord,
-    jwcPassWord,
-    'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
-  )
+    })
+    // 认证URP
+    .then(() => {
+      return HPUUrpLogin.login(
+        studentId,
+        vpnPassWord,
+        jwcPassWord,
+        'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
+      );
+    })
     .then(urpContent => {
       // 匹配<学籍信息>关键字
       return new Promise((resolve, reject) => {
@@ -67,27 +68,22 @@ exports.binding = function(req, res, next) {
     })
     .then(() => {
       authState.jwc = true;
-    });
-
-  // 等待认证完成
-  Promise.all([vpnLogin, urpLogin])
+    })
     // 更新绑定信息
     .then(() => {
-      retuen(
-        User.update(
-          {
-            openId: openId
-          },
-          {
-            $set: {
-              // TODO: 加密存储
-              studentId: studentId,
-              vpnPassWord: vpnPassWord,
-              jwcPassWord: jwcPassWord,
-              bind: true
-            }
+      return User.update(
+        {
+          openId: openId
+        },
+        {
+          $set: {
+            // TODO: 加密存储
+            studentId: studentId,
+            vpnPassWord: vpnPassWord,
+            jwcPassWord: jwcPassWord,
+            bind: true
           }
-        )
+        }
       );
     })
     .then(() => {
@@ -97,7 +93,7 @@ exports.binding = function(req, res, next) {
         data: authState
       });
     })
-    .catch(() => {
+    .catch(err => {
       res.status(400).json({
         statusCode: 400,
         errMsg: '认证失败',

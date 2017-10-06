@@ -181,12 +181,18 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
           svpn_password: rsa.encrypt(vpnPassWord)
         })
         .redirects()
+        .catch(() => {
+          console.error('登陆VPN出错');
+        })
         // 识别URP验证码
         .then(() => {
           return agent.get(config.urpVerCode);
         })
         .then(verCodeData => {
           return ocr(verCodeData.body, studentId);
+        })
+        .catch(() => {
+          console.error('验证码识别出错');
         })
         // 登录URP
         .then(verCodeIdentified => {
@@ -209,6 +215,9 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
               v_yzm: verCodeIdentified
             })
             .redirects();
+        })
+        .catch(() => {
+          console.error('登陆URP出错');
         })
         // 登录成功,访问教务资源
         .then(() => {

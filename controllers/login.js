@@ -57,7 +57,7 @@ exports.login = function(req, res, next) {
             });
           }
 
-          // 生成会话token，有效期7天
+          // 生成会话token，有效期15天
           var token = jwt.sign(
             {
               openId: userInfo.openId,
@@ -65,7 +65,7 @@ exports.login = function(req, res, next) {
             },
             config.jwtSecret,
             {
-              expiresIn: '7d'
+              expiresIn: '15d'
             }
           );
 
