@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      - /usr/src/app/vendor
+      - ./vendor:/usr/src/app/vendor
     restart: always
     links:
       - mongodb-master
@@ -21,7 +21,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      - /usr/src/app/vendor
+      - ./vendor:/usr/src/app/vendor
     restart: always
     links:
       - mongodb-master
@@ -35,7 +35,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      - /usr/src/app/vendor
+      - ./vendor:/usr/src/app/vendor
     restart: always
     links:
       - mongodb-master
