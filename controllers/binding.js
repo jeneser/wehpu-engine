@@ -26,7 +26,7 @@ exports.binding = function(req, res, next) {
   var name = '';
   // 正则
   var idNumberRe = /\d{17}[\d|x]|\d{15}/i;
-  var nameRe = /<TD width=275>[\u4e00-\u9fa5]{2,5}/i;
+  var nameRe = /<td\swidth="275">\s+([\u4e00-\u9fa5]{2,5})/i;
 
   if (!studentId && !vpnPassWord && !jwcPassWord && !openId) {
     res.status(400).json({
@@ -77,7 +77,7 @@ exports.binding = function(req, res, next) {
           // 匹配姓名
           var nameRes = data.match(nameRe);
           if (nameRes !== null) {
-            name = nameRes[0];
+            name = nameRes[1];
           }
 
           resolve('访问成功');
