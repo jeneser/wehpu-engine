@@ -70,9 +70,15 @@ exports.binding = function(req, res, next) {
 
         if (/学籍信息/.test(studentInfo)) {
           // 匹配身份证号
-          idNumber = studentInfo.match(idNumberRe)[0];
+          var idNumberRes = studentInfo.match(idNumberRe);
+          if (idNumberRes !== null) {
+            idNumber = idNumberRes[0];
+          }
           // 匹配姓名
-          name = studentInfo.match(nameRe)[0];
+          var nameRes = studentInfo.match(nameRe);
+          if (nameRes !== null) {
+            name = nameRes[0];
+          }
 
           resolve('访问成功');
         } else {
