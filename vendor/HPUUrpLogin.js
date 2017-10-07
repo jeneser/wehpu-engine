@@ -48,7 +48,11 @@ var config = {
       l: 'hpu',
       psm: 7,
       binary: 'tesseract'
-    }
+    },
+    // 尝试次数flag
+    // node-tesseract库不稳定
+    // TODO: 使用更稳定的库
+    times: 0
   },
 
   // VPN参数
@@ -126,7 +130,12 @@ function ocr(verCode, fileName) {
         // Tesseract-ocr识别验证码
         tesseract.process(verCodePath, config.ocr.options, (err, data) => {
           if (err) {
-            reject('识别验证码出错');
+            // 递归，尝试3次
+            if (config.ocr.times < 3) {
+              ocr(verCode, fileName);
+              config.ocr.times++;
+            }
+            // reject('识别验证码出错');
           } else {
             var ver = new RegExp('^[a-zA-Z0-9]{4}$');
             if (ver.test(data.trim())) {
@@ -194,9 +203,7 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
           return agent.get(config.urpVerCode);
         })
         .then(verCodeData => {
-          return ocr(verCodeData.body, studentId).catch(() => {
-            console.error('验证码识别出错');
-          });
+          return ocr(verCodeData.body, studentId);
         })
         // 登录URP
         .then(verCodeIdentified => {
