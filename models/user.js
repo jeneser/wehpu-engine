@@ -22,6 +22,14 @@ var userSchema = new Schema({
     type: String,
     default: ''
   },
+  name: {
+    type: String,
+    default: ''
+  },
+  idNumber: {
+    type: String,
+    default: ''
+  },
   vpnPassWord: {
     type: String,
     default: ''
@@ -30,7 +38,6 @@ var userSchema = new Schema({
     type: String,
     default: ''
   }
-
 });
 
 var User = mongoose.model('User', userSchema);

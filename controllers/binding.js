@@ -20,6 +20,13 @@ exports.binding = function(req, res, next) {
     vpn: false,
     jwc: false
   };
+  // 身份证号
+  var idNumber = '';
+  // 姓名
+  var name = '';
+  // 正则
+  var idNumberRe = /\d{17}[\d|x]|\d{15}/i;
+  var nameRe = /<TD width=275>[\u4e00-\u9fa5]{2,5}/i;
 
   if (!studentId && !vpnPassWord && !jwcPassWord && !openId) {
     res.status(400).json({
@@ -59,7 +66,14 @@ exports.binding = function(req, res, next) {
     .then(urpContent => {
       // 匹配<学籍信息>关键字
       return new Promise((resolve, reject) => {
-        if (/学籍信息/.test(urpContent.text)) {
+        var studentInfo = urpContent.text;
+
+        if (/学籍信息/.test(studentInfo)) {
+          // 匹配身份证号
+          idNumber = studentInfo.match(idNumberRe)[0];
+          // 匹配姓名
+          name = studentInfo.match(nameRe)[0];
+
           resolve('访问成功');
         } else {
           reject('访问失败');
@@ -78,6 +92,8 @@ exports.binding = function(req, res, next) {
         {
           $set: {
             // TODO: 加密存储
+            name: name,
+            idNumber: idNumber,
             studentId: studentId,
             vpnPassWord: vpnPassWord,
             jwcPassWord: jwcPassWord,
