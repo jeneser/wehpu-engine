@@ -66,16 +66,16 @@ exports.binding = function(req, res, next) {
     .then(urpContent => {
       // 匹配<学籍信息>关键字
       return new Promise((resolve, reject) => {
-        var studentInfo = urpContent.text;
+        var data = urpContent.text;
 
-        if (/学籍信息/.test(studentInfo)) {
+        if (/学籍信息/.test(data)) {
           // 匹配身份证号
-          var idNumberRes = studentInfo.match(idNumberRe);
+          var idNumberRes = data.match(idNumberRe);
           if (idNumberRes !== null) {
             idNumber = idNumberRes[0];
           }
           // 匹配姓名
-          var nameRes = studentInfo.match(nameRe);
+          var nameRes = data.match(nameRe);
           if (nameRes !== null) {
             name = nameRes[0];
           }
