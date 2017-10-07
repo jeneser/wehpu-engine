@@ -122,25 +122,30 @@ function ocr(verCode, fileName) {
 
     // 写入完成
     verCodeWriteStream.on('close', () => {
-      // Tesseract-ocr识别验证码
-      tesseract.process(verCodePath, config.ocr.options, (err, data) => {
-        if (err) {
-          reject('识别验证码出错');
-        } else {
-          var ver = new RegExp('^[a-zA-Z0-9]{4}$');
-          if (ver.test(data.trim())) {
-            // 删除临时文件
-            if (fs.existsSync(verCodePath)) {
-              fs.unlink(verCodePath);
-            }
-            // 返回结果
-            resolve(data.trim());
+      if (fs.existsSync(verCodePath)) {
+        // Tesseract-ocr识别验证码
+        tesseract.process(verCodePath, config.ocr.options, (err, data) => {
+          if (err) {
+            reject('识别验证码出错');
           } else {
-            // 递归，再次识别
-            ocr(verCode, fileName);
+            var ver = new RegExp('^[a-zA-Z0-9]{4}$');
+            if (ver.test(data.trim())) {
+              // 删除临时文件
+              if (fs.existsSync(verCodePath)) {
+                fs.unlink(verCodePath);
+              }
+              // 返回结果
+              resolve(data.trim());
+            } else {
+              // 递归，再次识别
+              ocr(verCode, fileName);
+            }
           }
-        }
-      });
+        });
+      } else {
+        // 递归，再次识别
+        ocr(verCode, fileName);
+      }
     });
 
     // 监听写入错误
