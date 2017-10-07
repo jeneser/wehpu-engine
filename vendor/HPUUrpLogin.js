@@ -189,10 +189,9 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
           return agent.get(config.urpVerCode);
         })
         .then(verCodeData => {
-          return ocr(verCodeData.body, studentId);
-        })
-        .catch(() => {
-          console.error('验证码识别出错');
+          return ocr(verCodeData.body, studentId).catch(() => {
+            console.error('验证码识别出错');
+          });
         })
         // 登录URP
         .then(verCodeIdentified => {
