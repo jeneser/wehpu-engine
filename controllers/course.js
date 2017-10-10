@@ -5,6 +5,7 @@ var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleCourse = require('../common/course');
 
 var Course = require('../models/course');
+var User = require('../models/user');
 
 /**
  * 获取课表
