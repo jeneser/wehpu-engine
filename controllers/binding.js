@@ -1,3 +1,5 @@
+var crypto = require('crypto');
+var config = require('../config');
 var HPUVpnLogin = require('../vendor/HPUVpnLogin');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var User = require('../models/user');
@@ -9,7 +11,7 @@ var User = require('../models/user');
  * @param {Number} jwcPassWord 教务处密码
  * @param {String} [openId] 包含在token中的openId
  */
-exports.binding = function(req, res, next) {
+exports.binding = function (req, res, next) {
   var studentId = req.body.studentId;
   var vpnPassWord = req.body.vpnPassWord;
   var jwcPassWord = req.body.jwcPassWord;
@@ -37,10 +39,10 @@ exports.binding = function(req, res, next) {
 
   // 认证VPN
   HPUVpnLogin.login(
-    studentId,
-    vpnPassWord,
-    'https://vpn.hpu.edu.cn/por/service.csp'
-  )
+      studentId,
+      vpnPassWord,
+      'https://vpn.hpu.edu.cn/por/service.csp'
+    )
     // 测试是否访问成功
     .then(serviceContent => {
       return new Promise((resolve, reject) => {
@@ -91,22 +93,24 @@ exports.binding = function(req, res, next) {
     })
     // 更新绑定信息
     .then(() => {
-      return User.update(
-        {
-          openId: openId
-        },
-        {
-          $set: {
-            // TODO: 加密存储
-            name: name,
-            idNumber: idNumber,
-            studentId: studentId,
-            vpnPassWord: vpnPassWord,
-            jwcPassWord: jwcPassWord,
-            bind: true
-          }
+      // 加密存储
+      var cipher = crypto.createCipher(config.commonAlgorithm, config.commonSecret);
+
+      var _vpnPassWord = cipher.update(vpnPassWord, 'utf8', 'hex');
+      var _jwcPassWord = cipher.update(jwcPassWord, 'utf8', 'hex');
+
+      return User.update({
+        openId: openId
+      }, {
+        $set: {
+          name: name,
+          idNumber: idNumber,
+          studentId: studentId,
+          vpnPassWord: _vpnPassWord,
+          jwcPassWord: _jwcPassWord,
+          bind: true
         }
-      );
+      });
     })
     .then(() => {
       res.status(201).json({
