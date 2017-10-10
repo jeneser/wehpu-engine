@@ -9,7 +9,6 @@ var courseController = require('../controllers/course');
  * @method GET
  * @param {String} [openId] 包含在token中的openId
  */
-// router.get('/course', auth.ensureAuthorized, courseController.course);
-router.get('/course', courseController.course);
+router.get('/course', auth.ensureAuthorized, courseController.course);
 
 module.exports = router;
