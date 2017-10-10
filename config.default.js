@@ -21,7 +21,13 @@ var config = {
   jscode2session: 'https://api.weixin.qq.com/sns/jscode2session',
 
   // json web token 需妥善保管!
-  jwtSecret: ''
+  jwtSecret: '',
+
+  // 通用加密算法 需妥善保管!
+  commonAlgorithm: '',
+
+  // 通用密钥 需妥善保管!
+  commonSecret: '',
 };
 
 module.exports = config;
