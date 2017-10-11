@@ -102,65 +102,81 @@ var config = {
  * @param {*} verCode 原始验证码图片
  * @return {Promise} Promise()
  */
-function ocr(verCode, fileName) {
-  var verCodePath = path.join(
-    config.ocr.config.dist,
-    fileName + config.ocr.config.suffix
-  );
-
-  // 创建写流
-  var verCodeWriteStream = fs.createWriteStream(verCodePath);
-
+function ocr(fileName) {
   return new Promise((resolve, reject) => {
-    // 处理图片
-    gm(verCode)
-      // 减少图像中的斑点
-      .despeckle()
-      // 调整对比度
-      .contrast(config.ocr.config.contrast)
-      // 调整大小
-      .resize(config.ocr.config.resize.w, config.ocr.config.resize.h)
-      // 写入磁盘
-      .stream()
-      .pipe(verCodeWriteStream);
-
-    // 写入完成
-    verCodeWriteStream.on('close', () => {
-      if (fs.existsSync(verCodePath)) {
-        // Tesseract-ocr识别验证码
-        tesseract.process(verCodePath, config.ocr.options, (err, data) => {
-          if (err) {
-            // 递归，尝试3次
-            if (config.ocr.times < 3) {
-              ocr(verCode, fileName);
-              config.ocr.times++;
-            }
-            // reject('识别验证码出错');
-          } else {
-            var ver = new RegExp('^[a-zA-Z0-9]{4}$');
-            if (ver.test(data.trim())) {
-              // 删除临时文件
-              if (fs.existsSync(verCodePath)) {
-                fs.unlink(verCodePath);
-              }
-              // 返回结果
-              resolve(data.trim());
+    // 验证码暂存路径
+    var verCodePath = path.join(
+      config.ocr.config.dist,
+      fileName + config.ocr.config.suffix
+    );
+    // 识别验证码
+    (function _ocr() {
+      agent
+        .get(config.urpVerCode)
+        .then(verCode => {
+          return new Promise((_resolve, _reject) => {
+            // 创建写流
+            var verCodeWriteStream = fs.createWriteStream(verCodePath);
+            // 处理图片
+            gm(verCode)
+              // 减少图像中的斑点
+              .despeckle()
+              // 调整对比度
+              .contrast(config.ocr.config.contrast)
+              // 调整大小
+              .resize(config.ocr.config.resize.w, config.ocr.config.resize.h)
+              // 写入磁盘
+              .stream()
+              .pipe(verCodeWriteStream);
+            // 监听
+            verCodeWriteStream.on('close', () => {
+              _resolve();
+            });
+            verCodeWriteStream.on('error', () => {
+              _reject('磁盘写入出错');
+            });
+          }).then(() => {
+            // 检查文件是否存在
+            if (fs.existsSync(verCodePath)) {
+              // Tesseract-ocr识别验证码
+              tesseract.process(
+                verCodePath,
+                config.ocr.options,
+                (err, data) => {
+                  if (err) {
+                    // 递归，尝试3次
+                    if (config.ocr.times < 3) {
+                      _ocr();
+                      config.ocr.times++;
+                    } else {
+                      reject('验证码识别出错');
+                    }
+                  } else {
+                    var ver = new RegExp('^[a-zA-Z0-9]{4}$');
+                    if (ver.test(data.trim())) {
+                      // 识别成功，删除临时文件
+                      if (fs.existsSync(verCodePath)) {
+                        fs.unlink(verCodePath);
+                      }
+                      // 返回结果
+                      resolve(data.trim());
+                    } else {
+                      // 再次识别
+                      _ocr();
+                    }
+                  }
+                }
+              );
             } else {
-              // 递归，再次识别
-              ocr(verCode, fileName);
+              // 再次识别
+              _ocr();
             }
-          }
+          });
+        })
+        .catch(err => {
+          reject('验证码识别出错');
         });
-      } else {
-        // 递归，再次识别
-        ocr(verCode, fileName);
-      }
-    });
-
-    // 监听写入错误
-    verCodeWriteStream.on('error', () => {
-      reject('无法写入磁盘');
-    });
+    })();
   });
 }
 
@@ -195,15 +211,9 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
           svpn_password: rsa.encrypt(vpnPassWord)
         })
         .redirects()
-        .catch(() => {
-          console.error('登陆VPN出错');
-        })
         // 识别URP验证码
         .then(() => {
-          return agent.get(config.urpVerCode);
-        })
-        .then(verCodeData => {
-          return ocr(verCodeData.body, studentId);
+          return Promise.resolve(ocr(studentId));
         })
         // 登录URP
         .then(verCodeIdentified => {
@@ -227,17 +237,12 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
             })
             .redirects();
         })
-        .catch(() => {
-          console.error('登陆URP出错');
-        })
         // 登录成功,访问教务资源
         .then(() => {
           return agent.get(url).charset('gbk');
         })
     );
   } else {
-    return new Promise((resolve, reject) => {
-      reject('参数错误');
-    });
+    return Promise.reject('参数错误');
   }
 };
