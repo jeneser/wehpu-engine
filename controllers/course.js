@@ -69,10 +69,11 @@ exports.course = function (req, res, next) {
       return handleCourse.course(data);
     })
     // 持久化
-    .then(courseRes => {
+    .then(([originCourses, processedCourses]) => {
       return new Course({
         openId: openId,
-        courses: courseRes
+        courses: processedCourses,
+        originCourses: originCourses
       }).save();
     })
     // 返回

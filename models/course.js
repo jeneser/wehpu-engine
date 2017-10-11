@@ -4,6 +4,9 @@ var Schema = mongoose.Schema;
 var courseSchema = new Schema({
   openId: String,
   courses: {
+    type: Object
+  },
+  originCourses: {
     type: Array
   },
   timestamp: {
