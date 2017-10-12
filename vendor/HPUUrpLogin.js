@@ -102,7 +102,7 @@ var config = {
  * @param {*} verCode 原始验证码图片
  * @return {Promise} Promise()
  */
-function ocr(fileName) {
+function ocr(agent, fileName) {
   return new Promise((resolve, reject) => {
     // 验证码暂存路径
     var verCodePath = path.join(
@@ -156,7 +156,7 @@ function ocr(fileName) {
                     if (ver.test(data.trim())) {
                       // 识别成功，删除临时文件
                       if (fs.existsSync(verCodePath)) {
-                        fs.unlinkSync(verCodePath);
+                        fs.unlink(verCodePath);
                       }
                       // 返回结果
                       resolve(data.trim());
@@ -213,7 +213,7 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
         .redirects()
         // 识别URP验证码
         .then(() => {
-          return Promise.resolve(ocr(studentId));
+          return Promise.resolve(ocr(agent, studentId));
         })
         // 登录URP
         .then(verCodeIdentified => {

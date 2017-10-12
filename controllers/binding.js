@@ -11,7 +11,7 @@ var User = require('../models/user');
  * @param {Number} jwcPassWord 教务处密码
  * @param {String} [openId] 包含在token中的openId
  */
-exports.binding = function (req, res, next) {
+exports.binding = function(req, res, next) {
   var studentId = req.body.studentId;
   var vpnPassWord = req.body.vpnPassWord;
   var jwcPassWord = req.body.jwcPassWord;
@@ -38,11 +38,13 @@ exports.binding = function (req, res, next) {
   }
 
   // 认证VPN
-  HPUVpnLogin.login(
+  Promise.resolve(
+    HPUVpnLogin.login(
       studentId,
       vpnPassWord,
       'https://vpn.hpu.edu.cn/por/service.csp'
     )
+  )
     // 测试是否访问成功
     .then(serviceContent => {
       return new Promise((resolve, reject) => {
@@ -58,11 +60,13 @@ exports.binding = function (req, res, next) {
     })
     // 认证URP
     .then(() => {
-      return HPUUrpLogin.login(
-        studentId,
-        vpnPassWord,
-        jwcPassWord,
-        'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
+      return Promise.resolve(
+        HPUUrpLogin.login(
+          studentId,
+          vpnPassWord,
+          jwcPassWord,
+          'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
+        )
       );
     })
     .then(urpContent => {
@@ -94,23 +98,29 @@ exports.binding = function (req, res, next) {
     // 更新绑定信息
     .then(() => {
       // 加密存储
-      var cipher = crypto.createCipher(config.commonAlgorithm, config.commonSecret);
+      var cipher = crypto.createCipher(
+        config.commonAlgorithm,
+        config.commonSecret
+      );
 
       var _vpnPassWord = cipher.update(vpnPassWord, 'utf8', 'hex');
       var _jwcPassWord = cipher.update(jwcPassWord, 'utf8', 'hex');
 
-      return User.update({
-        openId: openId
-      }, {
-        $set: {
-          name: name,
-          idNumber: idNumber,
-          studentId: studentId,
-          vpnPassWord: _vpnPassWord,
-          jwcPassWord: _jwcPassWord,
-          bind: true
+      return User.update(
+        {
+          openId: openId
+        },
+        {
+          $set: {
+            name: name,
+            idNumber: idNumber,
+            studentId: studentId,
+            vpnPassWord: _vpnPassWord,
+            jwcPassWord: _jwcPassWord,
+            bind: true
+          }
         }
-      });
+      );
     })
     .then(() => {
       res.status(201).json({
