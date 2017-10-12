@@ -12,30 +12,35 @@ var User = require('../models/user');
  * @method GET
  * @param {String} [openId] 包含在token中的openId
  */
-exports.course = function (req, res, next) {
+exports.course = function(req, res, next) {
   var openId = req.jwtPayload.openId;
 
   if (!openId) {
     res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误'
-    })
+    });
   }
 
   // 查询用户，获取教务资源登录密码
-  User.findOne({
+  Promise.resolve(
+    User.findOne({
       openId: openId
     })
+  )
     .then(person => {
       if (person) {
         // 解密
-        var decipher = crypto.createDecipher(config.commonAlgorithm, config.commonSecret);
+        var decipher = crypto.createDecipher(
+          config.commonAlgorithm,
+          config.commonSecret
+        );
 
         var userInfo = {
           studentId: person.studentId,
           vpnPassWord: decipher.update(person.vpnPassWord, 'hex', 'utf8'),
           jwcPassWord: decipher.update(person.jwcPassWord, 'hex', 'utf8')
-        }
+        };
 
         return userInfo;
       } else {
@@ -47,11 +52,13 @@ exports.course = function (req, res, next) {
     })
     // 登录教务处并获取课表资源
     .then(userInfo => {
-      return HPUUrpLogin.login(
-        userInfo.studentId,
-        userInfo.vpnPassWord,
-        userInfo.jwcPassWord,
-        'https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6'
+      return Promise.resolve(
+        HPUUrpLogin.login(
+          userInfo.studentId,
+          userInfo.vpnPassWord,
+          userInfo.jwcPassWord,
+          'https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6'
+        )
       );
     })
     // 测试是否访问成功
@@ -66,9 +73,9 @@ exports.course = function (req, res, next) {
     })
     // 处理课表
     .then(data => {
-      return handleCourse.course(data);
+      return Promise.resolve(handleCourse.course(data));
     })
-    // 持久化
+    // 解构参数，持久化
     .then(([originCourses, processedCourses]) => {
       return new Course({
         openId: openId,
@@ -90,6 +97,5 @@ exports.course = function (req, res, next) {
         statusCode: 404,
         errMsg: '获取课表失败'
       });
-    })
-
-}
+    });
+};

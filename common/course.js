@@ -208,7 +208,7 @@ exports.course = function(data) {
       });
 
       // courses：原始课表数据，_courses经过处理的课表数据
-      resolve(courses, _courses);
+      resolve([courses, _courses]);
     } else {
       reject('处理课表出错');
     }

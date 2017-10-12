@@ -130,7 +130,7 @@ function ocr(agent, fileName) {
               .pipe(verCodeWriteStream);
             // 监听
             verCodeWriteStream.on('close', () => {
-              _resolve();
+              _resolve('验证码预处理成功');
             });
             verCodeWriteStream.on('error', () => {
               _reject('磁盘写入出错');
