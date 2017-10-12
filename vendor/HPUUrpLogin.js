@@ -156,7 +156,7 @@ function ocr(fileName) {
                     if (ver.test(data.trim())) {
                       // 识别成功，删除临时文件
                       if (fs.existsSync(verCodePath)) {
-                        fs.unlink(verCodePath);
+                        fs.unlinkSync(verCodePath);
                       }
                       // 返回结果
                       resolve(data.trim());
