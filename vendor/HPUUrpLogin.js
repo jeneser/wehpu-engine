@@ -118,7 +118,7 @@ function ocr(agent, fileName) {
             // 创建写流
             var verCodeWriteStream = fs.createWriteStream(verCodePath);
             // 处理图片
-            gm(verCode)
+            gm(verCode.body)
               // 减少图像中的斑点
               .despeckle()
               // 调整对比度
