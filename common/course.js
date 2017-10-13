@@ -143,10 +143,30 @@ exports.course = function(data) {
 
     if (courses.length !== 0) {
       // 特殊处理的课表
-      var _courses = {};
+      var _courses = {
+        mon: [],
+        tue: [],
+        wed: [],
+        thu: [],
+        fri: [],
+        sat: [],
+        sun: [],
+        oth: []
+      };
 
       // 相关性，标识同门课程，用于前端着色或其他
       var rels = {};
+
+      // 相关序列辅助函数
+      var sequence = (function(end) {
+        var seq = 0;
+        var flag = 1;
+        return function() {
+          seq === end ? (flag = -1) : seq === 1 ? (flag = 1) : '';
+          seq = seq + flag;
+          return seq;
+        };
+      })(5);
 
       // 以周分割课程
       courses.forEach(courseEle => {
@@ -173,22 +193,10 @@ exports.course = function(data) {
             _courses.sun.push(courseEle);
             break;
           // 其他
-          case 8:
+          default:
             _courses.oth.push(courseEle);
-            break;
         }
       });
-
-      // 相关序列
-      var sequence = (function(end) {
-        var seq = 0;
-        var flag = 1;
-        return function() {
-          seq === end ? (flag = -1) : seq === 1 ? (flag = 1) : '';
-          seq = seq + flag;
-          return seq;
-        };
-      })(5);
 
       // 添加相关性
       Object.keys(_courses).forEach(keyEle => {
