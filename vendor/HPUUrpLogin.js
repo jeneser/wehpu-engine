@@ -182,12 +182,16 @@ function ocr(agent, fileName) {
 
 /**
  * 模拟登录
+ * @param {Object} params 配置参数
  * @param {Number} studentId 学号/一卡通号
  * @param {Number} vpnPassWord vpn密码
  * @param {Number} jwcPassWord 教务处密码
  * @param {String} url 要访问的教务资源
+ * @param {String} method 请求方法
  */
-exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
+exports.login = function(params) {
+  var params = params || {};
+
   // 禁用https
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
@@ -197,7 +201,7 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
   // 初始化RSA加密算法
   var rsa = new RsaNode(config.KEY, config.EXP);
 
-  if (studentId && vpnPassWord && jwcPassWord) {
+  if (params.studentId && params.vpnPassWord && params.jwcPassWord) {
     return (
       // 登录VPN
       agent
@@ -205,15 +209,15 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
         .set(config.vpnLoginHeader)
         .type('form')
         .send({
-          svpn_name: studentId
+          svpn_name: params.studentId
         })
         .send({
-          svpn_password: rsa.encrypt(vpnPassWord)
+          svpn_password: rsa.encrypt(params.vpnPassWord)
         })
         .redirects()
         // 识别URP验证码
         .then(() => {
-          return Promise.resolve(ocr(agent, studentId));
+          return Promise.resolve(ocr(agent, params.studentId));
         })
         // 登录URP
         .then(verCodeIdentified => {
@@ -231,15 +235,19 @@ exports.login = function(studentId, vpnPassWord, jwcPassWord, url) {
               dzslh: ''
             })
             .send({
-              zjh: studentId,
-              mm: jwcPassWord,
-              v_yzm: verCodeIdentified
+              zjh: params.studentId,
+              mm: params.jwcPassWord,
+              v_yzm: params.verCodeIdentified
             })
             .redirects();
         })
         // 登录成功,访问教务资源
         .then(() => {
-          return agent.get(url).charset('gbk');
+          if (params.method.toLowerCase() === 'post') {
+            return agent.post(url).charset('gbk');
+          } else {
+            return agent.get(url).charset('gbk');
+          }
         })
     );
   } else {
