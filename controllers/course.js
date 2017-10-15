@@ -12,7 +12,7 @@ var User = require('../models/user');
  * @method GET
  * @param {String} [openId] 包含在token中的openId
  */
-exports.course = function(req, res, next) {
+exports.course = function (req, res, next) {
   var openId = req.jwtPayload.openId;
 
   if (!openId) {
@@ -24,10 +24,10 @@ exports.course = function(req, res, next) {
 
   // 查询用户，获取教务资源登录密码
   Promise.resolve(
-    User.findOne({
-      openId: openId
-    })
-  )
+      User.findOne({
+        openId: openId
+      })
+    )
     .then(person => {
       if (person) {
         // 解密
@@ -53,12 +53,13 @@ exports.course = function(req, res, next) {
     // 登录教务处并获取课表资源
     .then(userInfo => {
       return Promise.resolve(
-        HPUUrpLogin.login(
-          userInfo.studentId,
-          userInfo.vpnPassWord,
-          userInfo.jwcPassWord,
-          'https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6'
-        )
+        HPUUrpLogin.login({
+          studentId: userInfo.studentId,
+          vpnPassWord: userInfo.vpnPassWord,
+          jwcPassWord: userInfo.jwcPassWord,
+          method: 'get',
+          url: 'https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6'
+        })
       );
     })
     // 测试是否访问成功
