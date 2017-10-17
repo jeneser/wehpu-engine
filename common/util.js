@@ -44,7 +44,7 @@ exports.calendar = function () {
         // 放假日期
         calendar.termEnd = aItem.length > 0 ? aItem[1] : '';
         // 当前学期 1 秋季 2 春季
-        calendar.currentTerm = calendar.termEnd ? (calendar.termEnd.split('-')[1] < 4 ? 1 : 2) : '';
+        calendar.currentTerm = calendar.termEnd ? calendar.termStart.split('-')[0] + '-' + calendar.termEnd.split('-')[0] + '-' + (calendar.termEnd.split('-')[1] < 4 ? 1 : 2) + '-1' : '';
 
         if (calendar.weekly) {
           resolve(calendar);
