@@ -28,6 +28,14 @@ var config = {
 
   // 通用密钥 需妥善保管!
   commonSecret: '',
+
+  // 阿里云OSS 需妥善保管!
+  aliOSS: {
+    region: '',
+    accessKeyId: '',
+    accessKeySecret: '',
+    bucket: ''
+  }
 };
 
 module.exports = config;

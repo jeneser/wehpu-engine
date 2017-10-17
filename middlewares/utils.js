@@ -5,7 +5,7 @@ var handleUtil = require('../common/util');
 /**
  * 校历
  */
-exports.calendar = function (req, res, next) {
+exports.requiredCalendar = function (req, res, next) {
 
   Promise.resolve(handleUtil.calendar())
     .then(calendarRes => {

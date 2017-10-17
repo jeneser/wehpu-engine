@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
+
 var auth = require('../middlewares/auth');
+var utils = require('../middlewares/utils');
 
 var classroomController = require('../controllers/classroom');
 
@@ -9,8 +11,6 @@ var classroomController = require('../controllers/classroom');
  * @method POST
  * @param {String} [openId] 包含在token中的openId
  */
-
-// router.post('/classroom', auth.ensureAuthorized, classroomController.classroom);
-router.post('/classroom', classroomController.classroom);
+router.post('/classroom', auth.ensureAuthorized, utils.requiredCalendar, classroomController.classroom);
 
 module.exports = router;
