@@ -10,9 +10,7 @@ mongoose.Promise = bluebird;
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var courses = require('./routes/courses');
-var classrooms = require('./routes/classrooms');
-var scores = require('./routes/scores');
+var tools = require('./routes/tools');
 var utils = require('./routes/utils');
 
 var app = express();
@@ -31,9 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/api/users', users);
-app.use('/api/courses', courses);
-app.use('/api/classrooms', classrooms);
-app.use('/api/scores', scores);
+app.use('/api/tools', tools);
 app.use('/api/utils', utils);
 
 // catch 404 and forward to error handler
