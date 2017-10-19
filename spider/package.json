@@ -1,0 +1,22 @@
+{
+  "name": "wehpu-spider",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Powerful spider for HPU wehpu.",
+  "author": "jeneser",
+  "license": "MIT",
+  "main": "spider.js",
+  "scripts": {
+    "start": "node ./spider"
+  },
+  "dependencies": {
+    "async": "^2.5.0",
+    "bluebird": "^3.5.0",
+    "cheerio": "^1.0.0-rc.2",
+    "log4js": "^2.3.7",
+    "mongoose": "^4.11.13",
+    "node-schedule": "^1.2.5",
+    "superagent": "^3.6.0",
+    "superagent-charset": "^1.2.0"
+  }
+}
