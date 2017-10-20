@@ -9,7 +9,7 @@ require('superagent-charset')(request);
  * 获取urls
  * @return {Promise} urls 结果数组
  */
-function getUrls() {
+function getUrls(flag) {
   // Promise
   return new Promise((resolve, reject) => {
     // URLs
@@ -31,15 +31,16 @@ function getUrls() {
         });
         // 返回结果数组
         if (urls.length > 0) {
-          resolve(urls);
+          // 截取未抓取过的urls
+          var _urls = urls.slice(0, urls.findIndex(i => i === flag));
+          resolve(_urls);
         } else {
-          logger.error('匹配新闻网URLs出错');
           reject('匹配URLs出错');
         }
       })
       .catch(err => {
-        consol.log(err);
-        logger.error('匹配新闻网URLs出错');
+        // consol.log(err);
+        logger.error('匹配新闻网URLs出错:' + err);
         reject('匹配URLs出错');
       });
   });
@@ -57,59 +58,67 @@ function getContent(urls) {
     var news = [];
 
     async.eachLimit(urls, config.limit, (url, cb) => {
+      // console.log(url);
+
+      // 发起请求
       request
         .get(url)
         .charset('gbk')
         .then(res => {
           $ = cheerio.load(res.text, config.cheerioConfig);
-          var mainTd = $('td').attr('width', '700');
-          var mateTd = $('td', mainTd).attr('height', '40');
+          var mainTd = $('td', '#body').attr('width', '700');
 
           var _news = {
             // 标题
             title: $('.NewsTitle', mainTd).text().trim(),
-            // 来源作者
-            author: mateTd.eq(1).match(/供稿人.(.+)发布/)[1],
-            // 时间
-            time: mateTd.eq(1).text().search(/\d{4}(-)\d{2}\1\d{2}/) !== -1 ? mateTd.eq(1).text().match(
-              /\d{4}(-)\d{2}\1\d{2}/)[0] : '',
-            // 标签
-            tag: $('a', mateTd.eq(0)).eq(1).text().trim(),
             // 内容
             content: $('#NewsContent', mainTd).html(),
-            // 图片
-            pictures: ''
+            // 来源作者
+            author: $('tr', mainTd).eq(2).text().search(/供稿人.(.+)发布/) !== -1 ? $('tr', mainTd).eq(2).text().match(/供稿人.(.+)发布/)[1].trim() : '',
+            // 时间
+            time: $('tr', mainTd).eq(2).text().search(/\d{4}(-)\d{2}\1\d{2}/) !== -1 ? $('tr', mainTd).eq(2).text().match(
+              /\d{4}(-)\d{2}\1\d{2}/)[0] : ''
           }
 
           // 并入结果数组
           news.push(_news);
-          cb(null, 1);
+
+          // 执行回调
+          cb(null);
         })
         .catch(err => {
-          // 忽略错误
+          // console.log(err);
+          logger.error('匹配新闻内容:' + err);
         });
     }, err => {
       if (news.length > 0) {
-        resolve(news);
+        // 返回抓取结果以及第一条URL
+        resolve([news, urls[0]]);
       } else {
-        reject('匹配新闻网内容出错');
+        reject('匹配新闻内容出错');
       }
     });
   });
 }
 
 exports.getNews = function () {
-
+  // 获取上次匹配进度Flag
+  var flag = 'http://news.hpu.edu.cn/news/contents/544/121223.html';
   // 获取urls
-  Promise.resolve(getUrls())
+  Promise.resolve(getUrls(flag))
     // 获取内容
     .then(urls => {
+      console.log('开始获取内容');
+
       return Promise.resolve(getContent(urls));
     })
-    .then(res => {
-      console.log(res);
+    // 解构新闻内容以及本次匹配进度
+    .then(([newsRes, url]) => {
+      console.log(newsRes);
+      console.log(url);
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
+      logger.error('新闻网内容抓取失败:' + err);
     });
 }
