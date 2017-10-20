@@ -1,3 +1,8 @@
 var news = require('./schedulers/news.hpu.edu.cn/index');
+var Logistics = require('./schedulers/houqin.hpu.edu.cn/index');
 
-news.getNews();
+// 新闻网
+// news.getNews();
+
+// 后勤
+Logistics.getNews();
