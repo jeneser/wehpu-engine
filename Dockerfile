@@ -10,6 +10,7 @@ RUN echo "deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted universe 
 RUN echo "deb http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted universe multiverse" > /etc/apt/sources.list
 RUN echo "deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted universe multiverse" > /etc/apt/sources.list
 RUN echo "deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse" > /etc/apt/sources.list
+RUN echo "deb http://ppa.launchpad.net/jonathonf/tesseract/ubuntu trusty main" > /etc/apt/sources.list
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
