@@ -49,7 +49,7 @@ services:
     volumes:
       - ./spider:/usr/src/app/spider
       - /usr/src/app/spider/node_modules
-      - ./spider/logs:/usr/src/app/spider/logs
+      - /usr/src/app/spider/logs
     restart: always
     links:
       - mongodb-master
