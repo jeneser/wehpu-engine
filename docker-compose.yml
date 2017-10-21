@@ -46,6 +46,8 @@ services:
   # spider
   wehpu-spider:
     build: ./spider
+    ports:
+      - 3000
     volumes:
       - ./spider:/usr/src/app/spider
       - /usr/src/app/spider/node_modules
@@ -90,7 +92,7 @@ services:
     build: ./builds/haproxy
     restart: always
     ports:
-      - 4000:3000
+      - 80:3000
     links:
       - wehpu-engine1
       - wehpu-engine2
