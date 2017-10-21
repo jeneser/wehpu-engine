@@ -39,11 +39,11 @@ exports.binding = function (req, res, next) {
 
   // 认证VPN
   Promise.resolve(
-      HPUVpnLogin.login(
-        studentId,
-        vpnPassWord,
-        'https://vpn.hpu.edu.cn/por/service.csp'
-      )
+      HPUVpnLogin.login({
+        studentId: studentId,
+        vpnPassWord: vpnPassWord,
+        url: 'https://vpn.hpu.edu.cn/por/service.csp'
+      })
     )
     // 测试是否访问成功
     .then(serviceContent => {
