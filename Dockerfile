@@ -7,7 +7,8 @@ WORKDIR /usr/src/app
 COPY package.json .
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN npm install \
+RUN npm install -g cnpm --registry=https://registry.npm.taobao.org \
+    && cnpm install \
     && apt-get update \
     && apt-get install -y apt-utils \
     && apt-get install -y tesseract-ocr \
