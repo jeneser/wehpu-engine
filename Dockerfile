@@ -3,6 +3,9 @@ FROM node:boron
 # Create app directory
 WORKDIR /usr/src/app
 
+# sources.list
+COPY sources.list /etc/apt/sources.list
+
 # Install app dependencies
 COPY package.json .
 
