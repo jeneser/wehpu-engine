@@ -3,6 +3,7 @@ FROM node:boron
 # Create app directory
 WORKDIR /usr/src/app
 
+# Update sources
 COPY aliyun-sources.list /etc/apt/aliyun-sources.list
 
 RUN cat /etc/apt/aliyun-sources.list > /etc/apt/sources.list
@@ -24,9 +25,6 @@ RUN npm install -g cnpm --registry=https://registry.npm.taobao.org \
 
 # Copy traineddata
 COPY ./ocr/hpu.traineddata /usr/share/tesseract-ocr/tessdata
-
-# Bundle app source
-# COPY . .
 
 EXPOSE 3000
 

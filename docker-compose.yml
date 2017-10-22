@@ -92,7 +92,9 @@ services:
     build: ./builds/haproxy
     restart: always
     ports:
-      - 80:3000
+      - 80:443
+    volumes:
+      - /etc/letsencrypt/live/hpu.jeneser.wang:/etc/ssl/certs/
     links:
       - wehpu-engine1
       - wehpu-engine2
