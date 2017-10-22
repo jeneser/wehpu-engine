@@ -9,4 +9,4 @@ var notices = require('./schedulers/vpn.hpu.edu.cn/index');
 // logistics.getNews();
 
 // 最新公告
-notices.getNews();
+// notices.getNews();
