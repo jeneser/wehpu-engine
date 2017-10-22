@@ -1,6 +1,6 @@
 FROM haproxy:latest
 
-COPY fullchain.pem /usr/local/etc/haproxy/fullchain.pem
+COPY wehpu.jeneser.wang.pem /usr/local/etc/haproxy/wehpu.jeneser.wang.pem
 
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
