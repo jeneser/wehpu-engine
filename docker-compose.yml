@@ -93,8 +93,6 @@ services:
     restart: always
     ports:
       - 80:443
-    volumes:
-      - /etc/letsencrypt/live/wehpu.jeneser.wang:/etc/ssl/certs/
     links:
       - wehpu-engine1
       - wehpu-engine2
