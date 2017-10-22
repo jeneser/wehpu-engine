@@ -92,7 +92,8 @@ services:
     build: ./builds/haproxy
     restart: always
     ports:
-      - 80:443
+      - 443:443
+      - 80:80
     links:
       - wehpu-engine1
       - wehpu-engine2
