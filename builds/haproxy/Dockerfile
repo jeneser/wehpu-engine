@@ -1,6 +1,6 @@
 FROM haproxy:latest
 
-RUN cp -ri /etc/letsencrypt/live/wehpu.jeneser.wang/* /etc/ssl/certs/
+COPY fullchain.pem /etc/ssl/certs/fullchain.pem
 
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
