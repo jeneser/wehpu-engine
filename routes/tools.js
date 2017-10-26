@@ -27,6 +27,11 @@ router.get('/scores', scoreController.score);
  * @method POST
  * @param {String} [openId] 包含在token中的openId
  */
-router.post('/classrooms', auth.ensureAuthorized, utils.requiredCalendar, classroomController.classroom);
+router.post(
+  '/classrooms',
+  auth.ensureAuthorized,
+  utils.requiredCalendar,
+  classroomController.classroom
+);
 
 module.exports = router;

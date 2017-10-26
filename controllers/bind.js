@@ -10,8 +10,9 @@ var User = require('../models/user');
  * @param {Number} vpnPassWord vpn密码
  * @param {Number} jwcPassWord 教务处密码
  * @param {String} [openId] 包含在token中的openId
+ * @return {RES} statusCode 201/400 创建新用户成功/失败
  */
-exports.binding = function (req, res, next) {
+exports.bind = function(req, res, next) {
   var studentId = req.body.studentId;
   var vpnPassWord = req.body.vpnPassWord;
   var jwcPassWord = req.body.jwcPassWord;
@@ -39,12 +40,12 @@ exports.binding = function (req, res, next) {
 
   // 认证VPN
   Promise.resolve(
-      HPUVpnLogin.login({
-        studentId: studentId,
-        vpnPassWord: vpnPassWord,
-        url: 'https://vpn.hpu.edu.cn/por/service.csp'
-      })
-    )
+    HPUVpnLogin.login({
+      studentId: studentId,
+      vpnPassWord: vpnPassWord,
+      url: 'https://vpn.hpu.edu.cn/por/service.csp'
+    })
+  )
     // 测试是否访问成功
     .then(serviceContent => {
       return new Promise((resolve, reject) => {
@@ -66,7 +67,8 @@ exports.binding = function (req, res, next) {
           vpnPassWord: vpnPassWord,
           jwcPassWord: jwcPassWord,
           method: 'get',
-          url: 'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
+          url:
+            'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
         })
       );
     })
@@ -106,19 +108,25 @@ exports.binding = function (req, res, next) {
 
       var _vpnPassWord = cipher.update(vpnPassWord, 'utf8', 'hex');
       var _jwcPassWord = cipher.update(jwcPassWord, 'utf8', 'hex');
+      var _idNumber = cipher.update(idNumber, 'utf8', 'hex');
 
-      return User.update({
-        openId: openId
-      }, {
-        $set: {
-          name: name,
-          idNumber: idNumber,
-          studentId: studentId,
-          vpnPassWord: _vpnPassWord,
-          jwcPassWord: _jwcPassWord,
-          bind: true
-        }
-      });
+      return Promise.resolve(
+        User.update(
+          {
+            openId: openId
+          },
+          {
+            $set: {
+              name: name,
+              studentId: studentId,
+              idNumber: _idNumber,
+              vpnPassWord: _vpnPassWord,
+              jwcPassWord: _jwcPassWord,
+              bind: true
+            }
+          }
+        )
+      );
     })
     .then(() => {
       res.status(201).json({
