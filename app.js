@@ -6,6 +6,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var bluebird = require('bluebird');
+var errorhandler = require('errorhandler');
+var config = require('./config');
+
 mongoose.Promise = bluebird;
 
 var index = require('./routes/index');
@@ -23,7 +26,9 @@ app.set('view engine', 'pug');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -32,22 +37,16 @@ app.use('/api/users', users);
 app.use('/api/tools', tools);
 app.use('/api/utils', utils);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+if (config.debug) {
+  app.use(errorhandler());
+} else {
+  app.use(function (err, req, res, next) {
+    return res.status(500).json({
+      statusCode: 500,
+      errMsg: '内部服务器错误'
+    });
+  });
+}
 
 module.exports = app;
