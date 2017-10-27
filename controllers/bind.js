@@ -10,7 +10,7 @@ var User = require('../models/user');
  * @param {Number} vpnPassWord vpn密码
  * @param {Number} jwcPassWord 教务处密码
  * @param {String} [openId] 包含在token中的openId
- * @return {RES} statusCode 201/400 创建新用户成功/失败
+ * @return {RES} statusCode 201/400 绑定成功/失败
  */
 exports.bind = function(req, res, next) {
   var studentId = req.body.studentId;
