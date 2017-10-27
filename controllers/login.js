@@ -10,7 +10,7 @@ var User = require('../models/user');
  * @param {*} code 用户登录凭证
  * @param {*} encryptedData 包括敏感数据在内的完整用户信息的加密数据
  * @param {*} iv 加密算法的初始向量
- * @return {*} bind token
+ * @return {RES} statusCode 200/201/400/500 返回/创建新用户成功/格式错误/登录出错
  */
 exports.login = function(req, res, next) {
   var code = req.body.code;
@@ -53,7 +53,7 @@ exports.login = function(req, res, next) {
           if (err) {
             res.status(500).json({
               statusCode: 500,
-              errMsg: '登录出错，请联系开发人员'
+              errMsg: '登录出错'
             });
           }
 
@@ -107,7 +107,7 @@ exports.login = function(req, res, next) {
     .catch(() => {
       res.status(500).json({
         statusCode: 500,
-        errMsg: '登录出错，请联系开发人员'
+        errMsg: '登录出错'
       });
     });
 };
