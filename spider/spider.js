@@ -1,3 +1,5 @@
+var logger = require('./common/logger');
+
 var news = require('./schedulers/news.hpu.edu.cn/index');
 var logistics = require('./schedulers/houqin.hpu.edu.cn/index');
 var notices = require('./schedulers/vpn.hpu.edu.cn/index');

@@ -3,7 +3,7 @@ var log4js = require('log4js');
 
 log4js.configure({
   appenders: {
-    engine: {
+    cheese: {
       type: 'file',
       // 存储位置
       filename: config.log4js.filename,
@@ -12,12 +12,17 @@ log4js.configure({
       // 备份
       backups: config.log4js.backups,
       // 压缩
-      compress: true
+      compress: true,
+    }
+  },
+  categories: {
+    default: {
+      appenders: ['cheese'],
+      level: config.debug ? 'INFO' : 'ERROR'
     }
   }
 });
 
-var logger = log4js.getLogger('engine');
-logger.setLevel(config.debug ? 'DEBUG' : 'ERROR');
+var logger = log4js.getLogger('cheese');
 
 module.exports = logger;

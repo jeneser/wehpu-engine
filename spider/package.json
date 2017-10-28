@@ -16,6 +16,7 @@
     "log4js": "^2.3.7",
     "mongoose": "^4.11.13",
     "node-schedule": "^1.2.5",
+    "rsa-node": "^1.0.0",
     "superagent": "^3.6.0",
     "superagent-charset": "^1.2.0"
   }
