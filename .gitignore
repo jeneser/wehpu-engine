@@ -30,4 +30,5 @@ node_modules
 npm-debug.log
 
 # configuration
-config.js
+/config.js
+haproxy.cfg
