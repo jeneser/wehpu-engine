@@ -1,5 +1,5 @@
 var request = require('superagent');
-var logger = require('./common/logger');
+var logger = require('../common/logger');
 var config = require('../config');
 
 /**
