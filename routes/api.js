@@ -15,6 +15,7 @@ var scoreController = require('../controllers/score');
 var utilController = require('../controllers/util');
 
 var feedbackController = require('../controllers/feedback');
+var donationController = require('../controllers/donation');
 
 /**
  * 登录&注册
@@ -84,6 +85,12 @@ router.get('/calendar', utils.requiredCalendar, utilController.calendar);
  * 反馈
  * @method post
  */
-router.get('/feedback', feedbackController.feedback);
+router.post('/feedback', feedbackController.feedback);
+
+/**
+ * 捐赠致谢
+ * @method get
+ */
+router.get('/donation', donationController.donation);
 
 module.exports = router;
