@@ -31,7 +31,7 @@ exports.donation = function (req, res, next) {
     .then(list => {
       res.status(200).json({
         statusCode: 200,
-        msg: '获取捐赠列表成功',
+        errMsg: '获取捐赠列表成功',
         data: list
       });
     })

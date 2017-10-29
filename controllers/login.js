@@ -85,7 +85,7 @@ exports.login = function (req, res, next) {
               .then(() => {
                 res.status(201).json({
                   statusCode: 201,
-                  msg: '登录成功',
+                  errMsg: '登录成功',
                   data: {
                     bind: false,
                     token: token
@@ -96,7 +96,7 @@ exports.login = function (req, res, next) {
             // 已存在，返回绑定信息和token
             res.status(200).json({
               statusCode: 200,
-              msg: '登录成功',
+              errMsg: '登录成功',
               data: {
                 bind: person.bind,
                 token: token

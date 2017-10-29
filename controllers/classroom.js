@@ -83,7 +83,7 @@ exports.classroom = function (req, res, next) {
     .then(classroomsRes => {
       res.status(200).json({
         statusCode: 200,
-        msg: '获取空教室成功',
+        errMsg: '获取空教室成功',
         data: classroomsRes
       });
     })

@@ -88,7 +88,7 @@ exports.course = function (req, res, next) {
     .then(doc => {
       res.status(201).json({
         statusCode: 201,
-        msg: '获取课表成功',
+        errMsg: '获取课表成功',
         data: doc.courses
       });
     })

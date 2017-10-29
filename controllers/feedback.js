@@ -38,7 +38,7 @@ exports.feedback = function (req, res, next) {
       if (data.id && data.url) {
         res.status(201).json({
           statusCode: 201,
-          msg: '反馈成功',
+          errMsg: '反馈成功',
           data: {
             url: data.url
           }
@@ -51,6 +51,8 @@ exports.feedback = function (req, res, next) {
       }
     })
     .catch(err => {
+      logger.error(err);
+
       res.status(500).json({
         statusCode: 500,
         errMsg: '反馈失败'

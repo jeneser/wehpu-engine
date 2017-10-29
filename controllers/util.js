@@ -8,7 +8,7 @@ exports.calendar = function (req, res, next) {
 
   if (Object.keys(calendar).length) {
     res.status(200).json({
-      msg: '校历获取成功',
+      errMsg: '校历获取成功',
       data: {
         date: calendar.date,
         weekly: calendar.weekly,

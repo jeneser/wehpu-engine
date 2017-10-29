@@ -63,7 +63,7 @@ exports.score = function (req, res, next) {
     .then(scoreRes => {
       res.status(200).json({
         statusCode: 200,
-        msg: '成绩查询成功',
+        errMsg: '成绩查询成功',
         data: scoreRes
       });
     })

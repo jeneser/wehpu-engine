@@ -31,7 +31,7 @@ exports.user = function(req, res, next) {
         };
         res.status(200).json({
           statusCode: 200,
-          msg: '查询成功',
+          errMsg: '查询成功',
           data: userInfo
         });
       } else {

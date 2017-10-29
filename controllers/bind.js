@@ -131,7 +131,7 @@ exports.bind = function(req, res, next) {
     .then(() => {
       res.status(201).json({
         statusCode: 201,
-        msg: '绑定成功',
+        errMsg: '绑定成功',
         data: authState
       });
     })
