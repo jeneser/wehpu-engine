@@ -11,7 +11,8 @@ exports = module.exports = function (req, res, next) {
 
   // 输出日志
   var t = new Date();
-  logger.info('\n\nStarted', t.toISOString(), req.method, req.url, req.ip);
+  logger.level = 'info';
+  logger.info('Started', req.method, req.url, req.ip);
 
   res.on('finish', () => {
     var duration = ((new Date()) - t);

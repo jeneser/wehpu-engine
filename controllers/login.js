@@ -2,7 +2,7 @@ var config = require('../config');
 var WXBizDataCrypt = require('../vendor/WXBizDataCrypt');
 var request = require('superagent');
 var jwt = require('jsonwebtoken');
-var logger = require('./common/logger');
+var logger = require('../common/logger');
 
 var User = require('../models/user');
 
