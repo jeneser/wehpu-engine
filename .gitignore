@@ -31,4 +31,5 @@ npm-debug.log
 
 # configuration
 /config.js
+/spider/config.js
 haproxy.cfg
