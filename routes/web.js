@@ -1,8 +1,13 @@
-var express = require('express');
 var os = require('os');
+var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
+var uploadController = require('../controllers/upload');
+
+/**
+ * index
+ * @method get
+ */
 router.get('/', function (req, res, next) {
   res.render('index', {
     title: 'Wehpu!',
@@ -10,7 +15,16 @@ router.get('/', function (req, res, next) {
   });
 });
 
-// 404
+/**
+ * 文件上传
+ * @method post
+ */
+router.post('/upload', uploadController.upload);
+
+/**
+ * 404
+ * @method get
+ */
 router.get('*', function (req, res, next) {
   res.status(404).json({
     statusCode: 404,

@@ -12,7 +12,7 @@ var logger = require('./common/logger');
 
 mongoose.Promise = bluebird;
 
-var index = require('./routes/index');
+var web = require('./routes/web');
 var api = require('./routes/api');
 
 var app = express();
@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // router
 app.use('/api/v1', api);
-app.use('/', index);
+app.use('/', web);
 
 // error handler
 if (config.debug) {
