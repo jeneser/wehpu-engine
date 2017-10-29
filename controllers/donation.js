@@ -1,5 +1,5 @@
 var request = require('superagent');
-var logger = require('./common/logger');
+var logger = require('../common/logger');
 var config = require('../config');
 
 /**
@@ -8,10 +8,10 @@ var config = require('../config');
 exports.donation = function (req, res, next) {
   // 获取捐赠列表
   request
+    .get('https://api.github.com/repos/hpufe/wehpu/issues/5')
     .set({
       'Authorization': 'Bearer ' + config.githubToken
     })
-    .get('https://api.github.com/repos/hpufe/wehpu/issues/5')
     // 处理列表
     .then(content => {
       return new Promise((resolve, reject) => {
@@ -36,8 +36,10 @@ exports.donation = function (req, res, next) {
       });
     })
     .catch(err => {
-      res.status(404).json({
-        statusCode: 404,
+      logger.error(err);
+
+      res.status(500).json({
+        statusCode: 500,
         errMsg: '反馈失败'
       });
     });
