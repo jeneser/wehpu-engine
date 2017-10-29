@@ -1,6 +1,6 @@
 var logger = require('../common/logger');
 
-var ignore = /^\/(public)/;
+var ignore = /^\/(public|stylesheets)/;
 
 exports = module.exports = function (req, res, next) {
   // 忽略部分路由
