@@ -9,7 +9,15 @@ var config = {
     maxLogSize: 10485760,
     // 保留三个备份
     backups: 3
-  }
+  },
+
+  // 阿里云OSS
+  aliOSS: {
+    region: '',
+    accessKeyId: '',
+    accessKeySecret: '',
+    bucket: ''
+  },
 }
 
 module.exports = config;
