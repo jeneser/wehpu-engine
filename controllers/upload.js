@@ -37,15 +37,16 @@ exports.upload = function (req, res, next) {
     if (!folder || whiteList.find(elem => {
         return elem === type;
       }) === undefined) {
-      // 移除临时文件
-      if (fs.existsSync(path)) {
-        fs.unlink(path);
-      }
 
       res.status(400).json({
         statusCode: 400,
         errMsg: '格式错误'
       });
+
+      // 移除临时文件
+      if (fs.existsSync(path)) {
+        fs.unlink(path);
+      }
     }
 
     // 上传文件
