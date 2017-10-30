@@ -6,19 +6,21 @@ var config = require('../config');
 
 /**
  * 反馈
+ * @param {Json} {} 请求数据
+ * @param {String} content 内容
+ * @param {String} labels 标签
+ * @param {String} nick 用户名
+ * @param {String} model 手机型号
+ * @param {String} platform 手机平台
+ * @param {String} wxVersion 微信版本号
+ * @param {String} wehpuVersion wehpu版本号
+ * @param {String} images 图片urls ,分割
  */
 exports.feedback = function (req, res, next) {
-  var title = req.body.title;
-  var content = req.body.content;
-  var labels = req.body.labels;
-  var nick = req.body.nick;
-  var model = req.body.model;
-  var platform = req.body.platform;
-  var wxVersion = req.body.wxVersion;
-  var wehpuVersion = req.body.wehpuVersion;
-  var images = req.body.images;
+  var data = req.body;
 
-  if (!title || !content || !labels || !nick || !model || !platform || !wxVersion || !wehpuVersion) {
+  // 验证
+  if (!data.content || data.content.length < 5 || !data.labels || !data.nick || !data.model || !data.platform || !data.wxVersion || !data.wehpuVersion) {
     res.status(400).json({
       statusCode: 400,
       errMsg: '格式错误'
@@ -26,22 +28,26 @@ exports.feedback = function (req, res, next) {
   }
 
   // 遍历图片
-  if (images) {
-    var _images = '';
-
-    images.split(',').forEach(elem => {
-      _images += '![img](' + elem + ')\r\n';
+  var _images = '';
+  if (data.images) {
+    data.images.split(',').forEach(url => {
+      _images += '![img](' + url + '?x-oss-process=style/feedback' + ')\r\n';
     });
   }
 
   // 拼接内容
-  var data = {
+  var _content = {
     // 标题
-    title: '[ ' + nick + ' ] ' + title,
+    title: '[ ' + data.nick + ' ] ' + '来自wehpu客户端的问题反馈',
     // 内容
-    body: content + '\r\n\r\n' + '------' + '\r\n' + '用户名: ' + nick + '\r\n' + '手机型号: ' + model + ' ' + platform + '\r\n' + '微信版本: ' + wxVersion + '\r\n' + 'Wehpu版本: ' + wehpuVersion + '\r\n\r\n' + _images,
+    body: data.content + '\r\n\r\n' + '------' + '\r\n' +
+      '用户名: ' + data.nick + '\r\n' +
+      '手机型号: ' + data.model + ' ' + data.platform + '\r\n' +
+      '微信版本: ' + data.wxVersion + '\r\n' +
+      'Wehpu版本: ' + data.wehpuVersion + '\r\n\r\n' +
+      _images,
     // 标签
-    labels: labels.split(',')
+    labels: data.labels.split(',')
   }
 
   // 发起请求
@@ -50,24 +56,24 @@ exports.feedback = function (req, res, next) {
     .set({
       'Authorization': 'Bearer ' + config.githubToken
     })
-    .send(data)
-    .then(content => {
-      var _content = content.text;
+    .send(_content)
+    .then(result => {
+      var _result = JSON.parse(result.text);
 
       return new Promise((resolve, reject) => {
-        if (_content.id && _content.url) {
-          resolve(_content);
+        if (_result.id && _result.url) {
+          resolve(_result);
         } else {
           reject('反馈失败');
         }
       })
     })
-    .then(content => {
+    .then(result => {
       res.status(201).json({
         statusCode: 201,
         errMsg: '反馈成功',
         data: {
-          url: content.url
+          url: result.url
         }
       });
     })
