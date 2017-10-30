@@ -84,8 +84,9 @@ router.get('/calendar', utils.requiredCalendar, utilController.calendar);
 /**
  * 反馈
  * @method post
+ * @return {RES} statusCode 201/400/500 反馈成功/格式错误/失败
  */
-router.post('/feedback', feedbackController.feedback);
+router.post('/feedback', auth.ensureAuthorized, feedbackController.feedback);
 
 /**
  * 捐赠致谢

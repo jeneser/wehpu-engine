@@ -15,6 +15,7 @@ var config = require('../config');
  * @param {String} wxVersion 微信版本号
  * @param {String} wehpuVersion wehpu版本号
  * @param {String} images 图片urls ,分割
+ * @return {String} url 反馈链接
  */
 exports.feedback = function (req, res, next) {
   var data = req.body;
