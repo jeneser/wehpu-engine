@@ -3,6 +3,7 @@ var config = require('../config');
 var cheerio = require('cheerio');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleScore = require('../common/score');
+var util = require('../common/util');
 
 var User = require('../models/user');
 
@@ -13,34 +14,9 @@ var User = require('../models/user');
 exports.score = function (req, res, next) {
   var openId = req.jwtPayload.openId;
 
-  // TODO:抽离中间件
-  Promise.resolve(
-      User.findOne({
-        openId: openId
-      })
-    )
-    .then(person => {
-      if (person) {
-        // 解密
-        var decipher = crypto.createDecipher(
-          config.commonAlgorithm,
-          config.commonSecret
-        );
-
-        var userInfo = {
-          studentId: person.studentId,
-          vpnPassWord: decipher.update(person.vpnPassWord, 'hex', 'utf8'),
-          jwcPassWord: decipher.update(person.jwcPassWord, 'hex', 'utf8')
-        };
-
-        return userInfo;
-      } else {
-        res.status(403).json({
-          statusCode: 403,
-          errMsg: '成绩查询失败'
-        });
-      }
-    })
+  // 查询用户，获取教务资源登录密码
+  Promise
+    .resolve(util.getUserInfo(openId))
     // 查询本学期成绩
     .then(userInfo => {
       return Promise.resolve(HPUUrpLogin.login({
@@ -52,7 +28,6 @@ exports.score = function (req, res, next) {
       }))
     })
     .then(urpContent => {
-      // console.log(urpContent);
       var _urpContent = urpContent.text;
       if (/本学期成绩/.test(_urpContent)) {
         return Promise.resolve(handleScore.score(_urpContent));
@@ -72,6 +47,5 @@ exports.score = function (req, res, next) {
         statusCode: 404,
         errMsg: '成绩查询失败'
       });
-      // console.log(err);
     });
 }

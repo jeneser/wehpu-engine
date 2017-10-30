@@ -3,6 +3,7 @@ var config = require('../config');
 var cheerio = require('cheerio');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleClassroom = require('../common/classroom');
+var util = require('../common/util');
 
 var User = require('../models/user');
 
@@ -16,7 +17,6 @@ var User = require('../models/user');
  */
 exports.classroom = function (req, res, next) {
   var openId = req.jwtPayload.openId;
-  var currentTerm = req.calendar.currentTerm;
 
   var building = req.body.building;
   var weekly = req.body.weekly;
@@ -34,34 +34,9 @@ exports.classroom = function (req, res, next) {
     });
   }
 
-  // 访问资源
-  Promise.resolve(
-      User.findOne({
-        openId: openId
-      })
-    )
-    .then(person => {
-      if (person) {
-        // 解密
-        var decipher = crypto.createDecipher(
-          config.commonAlgorithm,
-          config.commonSecret
-        );
-
-        var userInfo = {
-          studentId: person.studentId,
-          vpnPassWord: decipher.update(person.vpnPassWord, 'hex', 'utf8'),
-          jwcPassWord: decipher.update(person.jwcPassWord, 'hex', 'utf8')
-        };
-
-        return userInfo;
-      } else {
-        res.status(403).json({
-          statusCode: 403,
-          errMsg: '空教室查询失败'
-        });
-      }
-    })
+  // 查询用户，获取教务资源登录密码
+  Promise
+    .resolve(util.getUserInfo(openId))
     .then(userInfo => {
       return Promise.resolve(HPUUrpLogin.login({
         studentId: userInfo.studentId,
@@ -76,8 +51,7 @@ exports.classroom = function (req, res, next) {
         building: building,
         weekly: weekly,
         section: section,
-        week: week,
-        currentTerm: currentTerm
+        week: week
       }));
     })
     .then(classroomsRes => {
@@ -92,6 +66,5 @@ exports.classroom = function (req, res, next) {
         statusCode: 404,
         errMsg: '获取空教室失败'
       });
-      // console.log(err);
     })
 }

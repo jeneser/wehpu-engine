@@ -1,4 +1,5 @@
 var cheerio = require('cheerio');
+var util = require('../common/util');
 
 // 请求资源配置
 var agentConfig = {
@@ -31,16 +32,24 @@ exports.classroom = function (params) {
     // 结果
     var classrooms = [];
 
-    // 必要的试探性请求
-    agent.post('https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xszxcxAction.do?oper=xszxcx_lb')
-      .set(agentConfig.commonHeader)
-      .set({
-        Referer: 'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do'
+    // 获取当前学期
+    Promise
+      .resolve(util.getCalendar())
+      .then(calendar => {
+        params.currentTerm = calendar.currentTerm;
       })
-      .type('form')
-      .send({
-        'zxxnxq': '2017-2018-1-1',
-        'zxXaq': '01'
+      .then(() => {
+        // 必要的试探性请求
+        return agent.post('https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xszxcxAction.do?oper=xszxcx_lb')
+          .set(agentConfig.commonHeader)
+          .set({
+            Referer: 'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do'
+          })
+          .type('form')
+          .send({
+            'zxxnxq': '2017-2018-1-1',
+            'zxXaq': '01'
+          })
       })
       // 发起请求
       .then(() => {

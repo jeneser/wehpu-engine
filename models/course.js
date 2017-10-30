@@ -6,9 +6,6 @@ var courseSchema = new Schema({
   courses: {
     type: Object
   },
-  originCourses: {
-    type: Array
-  },
   timestamp: {
     type: Date,
     default: Date.now()

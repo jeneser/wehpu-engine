@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 
 var auth = require('../middlewares/auth');
-var utils = require('../middlewares/utils');
 
 var loginController = require('../controllers/login');
 var bindController = require('../controllers/bind');
@@ -51,39 +50,38 @@ router.get('/user', auth.ensureAuthorized, userController.user);
  * 获取课表
  * @method GET
  * @param {String} [openId] 包含在token中的openId
+ * @return {RES} statusCode 201/400/403/404
  */
 router.get('/course', auth.ensureAuthorized, courseController.course);
 
 /**
- * 查询成绩
+ * 本学期成绩
  * @method get
  * @param {String} [openId] 包含在token中的openId
+ * @return {RES} statusCode 200/403/404
  */
-router.get('/score', scoreController.score);
+router.get('/score', auth.ensureAuthorized, scoreController.score);
 
 /**
  * 查询空教室
  * @method POST
  * @param {String} [openId] 包含在token中的openId
  */
-router.post(
-  '/classroom',
-  auth.ensureAuthorized,
-  utils.requiredCalendar,
-  classroomController.classroom
-);
+router.post('/classroom', auth.ensureAuthorized, classroomController.classroom);
 
 
 /**
  * 校历
  * @method get
  */
-router.get('/calendar', utils.requiredCalendar, utilController.calendar);
+router.get('/calendar', utilController.calendar);
 
 
 /**
  * 反馈
  * @method post
+ * @param {String} [openId] 包含在token中的openId
+ * @param {Json} data 请求数据
  * @return {RES} statusCode 201/400/500 反馈成功/格式错误/失败
  */
 router.post('/feedback', auth.ensureAuthorized, feedbackController.feedback);

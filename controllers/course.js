@@ -3,6 +3,7 @@ var config = require('../config');
 var cheerio = require('cheerio');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleCourse = require('../common/course');
+var util = require('../common/util');
 
 var Course = require('../models/course');
 var User = require('../models/user');
@@ -15,6 +16,7 @@ var User = require('../models/user');
 exports.course = function (req, res, next) {
   var openId = req.jwtPayload.openId;
 
+  // 验证
   if (!openId) {
     res.status(400).json({
       statusCode: 400,
@@ -23,33 +25,8 @@ exports.course = function (req, res, next) {
   }
 
   // 查询用户，获取教务资源登录密码
-  Promise.resolve(
-      User.findOne({
-        openId: openId
-      })
-    )
-    .then(person => {
-      if (person) {
-        // 解密
-        var decipher = crypto.createDecipher(
-          config.commonAlgorithm,
-          config.commonSecret
-        );
-
-        var userInfo = {
-          studentId: person.studentId,
-          vpnPassWord: decipher.update(person.vpnPassWord, 'hex', 'utf8'),
-          jwcPassWord: decipher.update(person.jwcPassWord, 'hex', 'utf8')
-        };
-
-        return userInfo;
-      } else {
-        res.status(403).json({
-          statusCode: 403,
-          errMsg: '课表查询失败'
-        });
-      }
-    })
+  Promise
+    .resolve(util.getUserInfo(openId))
     // 登录教务处并获取课表资源
     .then(userInfo => {
       return Promise.resolve(
@@ -78,11 +55,19 @@ exports.course = function (req, res, next) {
     })
     // 解构参数，持久化
     .then(([originCourses, processedCourses]) => {
-      return new Course({
-        openId: openId,
-        courses: processedCourses,
-        originCourses: originCourses
-      }).save();
+      // 持久化经过处理的课表
+      return Promise.resolve(
+        Course.findOneAndUpdate({
+          openId: openId
+        }, {
+          $set: {
+            openId: openId,
+            courses: processedCourses
+          }
+        }, {
+          upsert: true
+        })
+      );
     })
     // 返回
     .then(doc => {

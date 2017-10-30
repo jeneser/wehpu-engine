@@ -1,6 +1,10 @@
+var crypto = require('crypto');
+var config = require('../config');
 var request = require('superagent');
 var cheerio = require('cheerio');
 var config = require('../config');
+
+var User = require('../models/user');
 
 // cheerio配置
 var cheerioConfig = {
@@ -13,15 +17,16 @@ var cheerioConfig = {
 };
 
 /**
- * 处理校历信息
+ * 处理校历信息，确保必定返回信息
+ * TODO：自行计算校历
  * @return {Promise} 处理结果
  */
-exports.calendar = function () {
-  // 发起请求
-  return request
-    .get('http://my.hpu.edu.cn/viewschoolcalendar3.jsp')
-    .then(calendarContent => {
-      return new Promise((resolve, reject) => {
+exports.getCalendar = function () {
+  return new Promise((resolve, reject) => {
+    // 发起请求
+    request
+      .get('http://my.hpu.edu.cn/viewschoolcalendar3.jsp')
+      .then(calendarContent => {
         var calendar = {};
 
         // 处理日历
@@ -52,5 +57,40 @@ exports.calendar = function () {
           reject('日历获取失败');
         }
       })
-    })
+  });
+}
+
+/**
+ * 获取用户基本密码信息
+ * @return {Promise} 通用密码
+ */
+exports.getUserInfo = function (openId) {
+  // 查询用户
+  return new Promise((resolve, reject) => {
+    Promise.resolve(
+        User.findOne({
+          openId: openId
+        })
+      )
+      .then(person => {
+        if (person) {
+          // 解密
+          var decipher = crypto.createDecipher(
+            config.commonAlgorithm,
+            config.commonSecret
+          );
+
+          var userInfo = {
+            studentId: person.studentId,
+            vpnPassWord: decipher.update(person.vpnPassWord, 'hex', 'utf8'),
+            jwcPassWord: decipher.update(person.jwcPassWord, 'hex', 'utf8'),
+            idNumber: decipher.update(person.idNumber, 'hex', 'utf8')
+          };
+
+          resolve(userInfo);
+        } else {
+          reject('获取用户信息失败');
+        }
+      });
+  });
 }
