@@ -90,6 +90,7 @@ router.post('/feedback', feedbackController.feedback);
 /**
  * 捐赠致谢
  * @method get
+ * @return {RES} statusCode 200/500 捐赠列表获取成功/失败
  */
 router.get('/donation', donationController.donation);
 

@@ -20,7 +20,7 @@ router.get('/', function (req, res, next) {
  * @method post
  * @param {String} folder 目标文件夹
  * @param {*} file 目标文件字段
- * @return {RES} 201/400/500 上传成功/失败
+ * @return {RES} statusCode 201/400/500 上传成功/失败
  */
 router.post('/upload', uploadController.upload);
 
