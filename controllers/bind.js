@@ -2,6 +2,8 @@ var crypto = require('crypto');
 var config = require('../config');
 var HPUVpnLogin = require('../vendor/HPUVpnLogin');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
+var logger = require('../common/logger');
+
 var User = require('../models/user');
 
 /**
@@ -12,7 +14,7 @@ var User = require('../models/user');
  * @param {String} [openId] 包含在token中的openId
  * @return {RES} statusCode 201/400 绑定成功/失败
  */
-exports.bind = function(req, res, next) {
+exports.bind = function (req, res, next) {
   var studentId = req.body.studentId;
   var vpnPassWord = req.body.vpnPassWord;
   var jwcPassWord = req.body.jwcPassWord;
@@ -40,12 +42,12 @@ exports.bind = function(req, res, next) {
 
   // 认证VPN
   Promise.resolve(
-    HPUVpnLogin.login({
-      studentId: studentId,
-      vpnPassWord: vpnPassWord,
-      url: 'https://vpn.hpu.edu.cn/por/service.csp'
-    })
-  )
+      HPUVpnLogin.login({
+        studentId: studentId,
+        vpnPassWord: vpnPassWord,
+        url: 'https://vpn.hpu.edu.cn/por/service.csp'
+      })
+    )
     // 测试是否访问成功
     .then(serviceContent => {
       return new Promise((resolve, reject) => {
@@ -67,8 +69,7 @@ exports.bind = function(req, res, next) {
           vpnPassWord: vpnPassWord,
           jwcPassWord: jwcPassWord,
           method: 'get',
-          url:
-            'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
+          url: 'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
         })
       );
     })
@@ -111,21 +112,18 @@ exports.bind = function(req, res, next) {
       var _idNumber = cipher.update(idNumber, 'utf8', 'hex');
 
       return Promise.resolve(
-        User.update(
-          {
-            openId: openId
-          },
-          {
-            $set: {
-              name: name,
-              studentId: studentId,
-              idNumber: _idNumber,
-              vpnPassWord: _vpnPassWord,
-              jwcPassWord: _jwcPassWord,
-              bind: true
-            }
+        User.update({
+          openId: openId
+        }, {
+          $set: {
+            name: name,
+            studentId: studentId,
+            idNumber: _idNumber,
+            vpnPassWord: _vpnPassWord,
+            jwcPassWord: _jwcPassWord,
+            bind: true
           }
-        )
+        })
       );
     })
     .then(() => {
@@ -136,6 +134,8 @@ exports.bind = function(req, res, next) {
       });
     })
     .catch(err => {
+      logger.error('认证失败' + err);
+
       res.status(400).json({
         statusCode: 400,
         errMsg: '认证失败',

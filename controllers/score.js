@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var config = require('../config');
 var cheerio = require('cheerio');
+var logger = require('../common/logger');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleScore = require('../common/score');
 var util = require('../common/util');
@@ -43,6 +44,8 @@ exports.score = function (req, res, next) {
       });
     })
     .catch(err => {
+      logger.error('成绩查询失败' + err);
+
       res.status(404).json({
         statusCode: 404,
         errMsg: '成绩查询失败'

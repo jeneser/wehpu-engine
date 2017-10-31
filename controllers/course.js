@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var config = require('../config');
 var cheerio = require('cheerio');
+var logger = require('../common/logger');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleCourse = require('../common/course');
 var util = require('../common/util');
@@ -79,6 +80,8 @@ exports.course = function (req, res, next) {
     })
     // 处理错误
     .catch(err => {
+      logger.error('获取课表失败' + err);
+
       res.status(404).json({
         statusCode: 404,
         errMsg: '获取课表失败'

@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var config = require('../config');
 var cheerio = require('cheerio');
+var logger = require('../common/logger');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleClassroom = require('../common/classroom');
 var util = require('../common/util');
@@ -62,6 +63,8 @@ exports.classroom = function (req, res, next) {
       });
     })
     .catch(err => {
+      logger.error('空教室获取失败' + err);
+
       res.status(404).json({
         statusCode: 404,
         errMsg: '获取空教室失败'

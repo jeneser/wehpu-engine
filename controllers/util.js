@@ -1,3 +1,4 @@
+var logger = require('../common/logger');
 var util = require('../common/util');
 
 /**
@@ -23,6 +24,8 @@ exports.calendar = function (req, res, next) {
       }
     })
     .catch(err => {
+      logger.error('校历获取失败' + err);
+
       res.status(404).json({
         statusCode: 404,
         errMsg: '校历获取失败'

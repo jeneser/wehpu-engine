@@ -1,3 +1,5 @@
+var logger = require('../common/logger');
+
 var User = require('../models/user');
 
 /**
@@ -5,7 +7,7 @@ var User = require('../models/user');
  * @param {String} [openId] 包含在token中的openId
  * @return {RES} statusCode 200/400/500 查询用户成功/格式错误/失败
  */
-exports.user = function(req, res, next) {
+exports.user = function (req, res, next) {
   var openId = req.jwtPayload.openId;
 
   if (!openId) {
@@ -17,10 +19,10 @@ exports.user = function(req, res, next) {
 
   // 查询用户
   Promise.resolve(
-    User.findOne({
-      openId: openId
-    })
-  )
+      User.findOne({
+        openId: openId
+      })
+    )
     .then(person => {
       if (person) {
         var userInfo = {
@@ -42,6 +44,8 @@ exports.user = function(req, res, next) {
       }
     })
     .catch(err => {
+      logger.error('获取用户信息失败' + err);
+
       res.status(500).json({
         statusCode: 500,
         errMsg: '查询失败'
