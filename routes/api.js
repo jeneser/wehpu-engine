@@ -10,6 +10,7 @@ var userController = require('../controllers/user');
 var classroomController = require('../controllers/classroom');
 var courseController = require('../controllers/course');
 var scoreController = require('../controllers/score');
+var physicalController = require('../controllers/physical');
 
 var calendarController = require('../controllers/calendar');
 
@@ -69,6 +70,13 @@ router.get('/score', auth.ensureAuthorized, scoreController.score);
  */
 router.post('/classroom', auth.ensureAuthorized, classroomController.classroom);
 
+/**
+ * 体测成绩
+ * @method get
+ * @param {String} [openId] 包含在token中的openId
+ */
+// router.get('/physical', auth.ensureAuthorized, physicalController.physical);
+router.get('/physical', physicalController.physical);
 
 /**
  * 校历
