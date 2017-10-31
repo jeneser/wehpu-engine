@@ -11,7 +11,7 @@ var classroomController = require('../controllers/classroom');
 var courseController = require('../controllers/course');
 var scoreController = require('../controllers/score');
 
-var utilController = require('../controllers/util');
+var calendarController = require('../controllers/calendar');
 
 var feedbackController = require('../controllers/feedback');
 var donationController = require('../controllers/donation');
@@ -73,8 +73,9 @@ router.post('/classroom', auth.ensureAuthorized, classroomController.classroom);
 /**
  * 校历
  * @method get
+ * @return {RES} statusCode 200/404 校历获取成功/失败
  */
-router.get('/calendar', utilController.calendar);
+router.get('/calendar', calendarController.calendar);
 
 
 /**

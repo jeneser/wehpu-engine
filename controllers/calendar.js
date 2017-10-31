@@ -12,12 +12,13 @@ exports.calendar = function (req, res, next) {
         res.status(200).json({
           errMsg: '校历获取成功',
           data: {
-            date: calendar.date,
-            weekly: calendar.weekly,
+            // 当前周
+            currentWeekly: calendar.weekly,
+            // 总周次
             totalWeekly: calendar.totalWeekly,
-            week: calendar.week,
+            // 开学日期
             termStart: calendar.termStart,
-            termEnd: calendar.termEnd,
+            // 当前学期
             currentTerm: calendar.currentTerm
           }
         });

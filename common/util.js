@@ -23,40 +23,19 @@ var cheerioConfig = {
  */
 exports.getCalendar = function () {
   return new Promise((resolve, reject) => {
-    // 发起请求
-    request
-      .get('http://my.hpu.edu.cn/viewschoolcalendar3.jsp')
-      .then(calendarContent => {
-        var calendar = {};
+    var calendar = {};
 
-        // 处理日历
-        $ = cheerio.load(calendarContent.text, cheerioConfig);
+    // 当前学期
+    calendar.currentTerm = config.calendar.currentTerm;
+    // 开学日期
+    calendar.termStart = config.calendar.termStart;
+    // 总周数
+    calendar.totalWeekly = config.calendar.totalWeekly;
 
-        var fontItem = $('.red');
-        var aItem = $('a').text().split('--');
-        var weekItem = $('span').eq(0).text().match(/星期[\u4e00-\u9fa5]/);
+    // 计算当前周次 1: 第一周
+    calendar.currentWeekly = (Date.now() > Date.parse(calendar.termStart)) ? calendar.totalWeekly : Math.ceil((Date.now() - Date.parse(calendar.termStart)) / 604800000);
 
-        // 年月日
-        calendar.date = fontItem.eq(0).text();
-        // 周次
-        calendar.weekly = fontItem.eq(1).text();
-        // 总周数
-        calendar.totalWeekly = fontItem.eq(2).text();
-        // 星期几
-        calendar.week = weekItem !== null ? weekItem[0] : '';
-        // 开学日期
-        calendar.termStart = aItem.length > 0 ? aItem[0] : '';
-        // 放假日期
-        calendar.termEnd = aItem.length > 0 ? aItem[1] : '';
-        // 当前学期 1 秋季 2 春季
-        calendar.currentTerm = calendar.termEnd ? calendar.termStart.split('-')[0] + '-' + calendar.termEnd.split('-')[0] + '-' + (calendar.termEnd.split('-')[1] < 4 ? 1 : 2) + '-1' : '';
-
-        if (calendar.weekly) {
-          resolve(calendar);
-        } else {
-          reject('日历获取失败');
-        }
-      })
+    resolve(calendar);
   });
 }
 
