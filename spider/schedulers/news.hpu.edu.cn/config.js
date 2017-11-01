@@ -4,11 +4,15 @@
  */
 var config = {
   // 定时抓取规则 星期一 至 星期五 凌晨2:00
+  // UTC+8 2:00 > UTC 18:00
   rule: {
-    hour: 2,
+    hour: 18,
     minute: 0,
     dayOfWeek: [1, 2, 3, 4, 5]
   },
+
+  // 网络超时 3s
+  timeout: 3000,
 
   // cheerio配置
   cheerioConfig: {

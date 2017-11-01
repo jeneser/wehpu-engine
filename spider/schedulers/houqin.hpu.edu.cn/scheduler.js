@@ -8,10 +8,10 @@ var main = require('./main');
  * houqin.hpu.edu.cn
  * 星期一 至 星期五 凌晨2:20
  */
-module.exports = function () {
-  return schedule.scheduleJob(config.rule, () => {
+exports.run = function () {
+  schedule.scheduleJob(config.rule, () => {
     var t = new Date();
-    logger.info('Started', '后勤定时任务', t.toISOString());
+    logger.info('Started', '后勤定时任务');
 
     // 执行主任务
     Promise
@@ -20,7 +20,7 @@ module.exports = function () {
         logger.info('Completed', '后勤定时任务', (new Date() - t) + 'ms');
       })
       .catch(err => {
-        logger.error('Completed', '后勤定时任务失败:' + err);
+        logger.error('Completed', '后勤定时任务失败', err, (new Date() - t) + 'ms');
       });
   });
 }

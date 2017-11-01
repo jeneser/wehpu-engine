@@ -4,11 +4,15 @@
  */
 var config = {
   // 后勤定时任务规则 星期一 至 星期五 凌晨2:20
+  // UTC+8 2:20 > UTC 18:20
   rule: {
-    hour: 2,
+    hour: 18,
     minute: 20,
     dayOfWeek: [1, 2, 3, 4, 5]
   },
+
+  // 网络超时 3s
+  timeout: 3000,
 
   // cheerio配置
   cheerioConfig: {

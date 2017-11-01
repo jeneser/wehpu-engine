@@ -10,4 +10,4 @@ var schedulerSchema = new Schema({
 
 var Scheduler = mongoose.model('Scheduler', schedulerSchema);
 
-module.exports = News;
+module.exports = Scheduler;

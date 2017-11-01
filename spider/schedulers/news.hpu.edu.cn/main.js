@@ -23,6 +23,9 @@ function getUrls(flag) {
       .get(config.url)
       .set(config.headers)
       .charset('gbk')
+      .timeout({
+        response: config.timeout
+      })
       .then(res => {
         $ = cheerio.load(res.text, config.cheerioConfig);
         // 匹配URLs
@@ -36,15 +39,24 @@ function getUrls(flag) {
         if (urls.length > 0) {
           // 截取未抓取过的urls
           var _urls = urls.slice(0, urls.findIndex(i => i === flag));
-          resolve(_urls);
+
+          if (_urls.length === 0) {
+            reject('无最新新闻，已结束本次任务');
+          } else {
+            resolve(_urls);
+          }
         } else {
           reject('匹配URLs出错');
         }
       })
       .catch(err => {
-        // consol.log(err);
-        logger.error('匹配新闻网URLs出错:' + err);
-        reject('匹配URLs出错');
+        if (err.timeout) {
+          reject('网络超时，已结束本次任务');
+        } else {
+          logger.error('匹配新闻网URLs出错', err);
+
+          reject('匹配新闻网URLs出错');
+        }
       });
   });
 }
@@ -88,7 +100,7 @@ function getContent(urls) {
           cb(null);
         })
         .catch(err => {
-          logger.error('匹配新闻内容:' + err);
+          logger.error('匹配新闻内容出错', err);
         });
     }, err => {
       if (news.length > 0) {
@@ -102,14 +114,16 @@ function getContent(urls) {
 }
 
 exports.getNews = function () {
-  return News
+  return Scheduler
     // 获取上次匹配进度Flag
     .findOne({
       id: 'news'
     })
     // 获取urls
     .then(doc => {
-      return Promise.resolve(getUrls(doc.flag));
+      var flag = doc ? doc.flag : '';
+
+      return Promise.resolve(getUrls(flag));
     })
     // 获取内容
     .then(urls => {
@@ -130,6 +144,8 @@ exports.getNews = function () {
         $set: {
           flag: url
         }
+      }, {
+        upsert: true
       }));
     })
 }

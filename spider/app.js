@@ -8,14 +8,14 @@ exports.run = function () {
    * news.hpu.edu.cn
    * 星期一 至 星期五 凌晨2:00
    */
-  jNews();
+  jNews.run();
 
   /**
    * 后勤定时任务
    * houqin.hpu.edu.cn
    * 星期一 至 星期五 凌晨2:20
    */
-  jLogistics();
+  jLogistics.run();
 
   /**
    * 教务公告定时任务
