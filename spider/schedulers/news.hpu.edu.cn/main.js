@@ -10,6 +10,7 @@ var Scheduler = require('../../models/scheduler');
 
 /**
  * 获取urls
+ * @param {String} flag 上次匹配位置
  * @return {Promise} urls 结果数组
  */
 function getUrls(flag) {
@@ -63,8 +64,8 @@ function getUrls(flag) {
 
 /**
  * 获取文章详情
- * @param {Object} classify 分类URLs
- * @return {Promise} Promise
+ * @param {Array} urls URLs
+ * @return {Promise} 结果，本次匹配位置
  */
 function getContent(urls) {
   // Promise
