@@ -1,8 +1,14 @@
 /**
- * 后勤网配置
- * http://houqin.hpu.edu.cn
+ * 教务公告网配置
+ * https://vpn.hpu.edu.cn
  */
 var config = {
+  // 教务公告定时任务 星期一/星期三/星期五 凌晨2:30
+  rule: {
+    hour: 2,
+    minute: 30,
+    dayOfWeek: [1, 3, 5]
+  },
 
   // 妥善保管用户账户
   userInfo: {

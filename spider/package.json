@@ -7,7 +7,7 @@
   "license": "MIT",
   "main": "spider.js",
   "scripts": {
-    "start": "node ./spider"
+    "start": "node ./bin/spider"
   },
   "dependencies": {
     "ali-oss": "^4.11.0",

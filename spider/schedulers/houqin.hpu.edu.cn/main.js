@@ -71,7 +71,7 @@ function getContent(urls) {
             // 标题
             title: $('h2', '.title').text().trim(),
             // 内容
-            content: $('.Newstxt').html(),
+            content: $('.Newstxt').text().replace(/\s/g, '\t').replace(/(&nbsp;){1,}/ig, '\n'),
             // 来源作者
             tag: $('a', '.centerrighthead').eq(1).text().trim(),
             // 时间
@@ -104,7 +104,7 @@ exports.getNews = function () {
   // 获取上次匹配进度Flag
   var flag = '/dsh/Pchome/newsInfoDesc/a88b7b95-5a95-4d41-9088-a7f90126e2d9';
   // 获取urls
-  Promise.resolve(getUrls(flag))
+  return Promise.resolve(getUrls(flag))
     // 获取内容
     .then(urls => {
       // console.log(urls);

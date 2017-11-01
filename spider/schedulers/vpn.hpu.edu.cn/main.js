@@ -112,7 +112,7 @@ exports.getNews = function () {
   var _agent = '';
 
   // 登录VPN
-  Promise.resolve(HPUVpnLogin.login(config.userInfo))
+  return Promise.resolve(HPUVpnLogin.login(config.userInfo))
     .then(agent => {
       _agent = agent;
 

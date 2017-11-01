@@ -58,8 +58,6 @@ function getContent(urls) {
     var news = [];
 
     async.eachLimit(urls, config.limit, (url, cb) => {
-      // console.log(url);
-
       // 发起请求
       request
         .get(url)
@@ -72,7 +70,7 @@ function getContent(urls) {
             // 标题
             title: $('.NewsTitle', mainTd).text().trim(),
             // 内容
-            content: $('#NewsContent', mainTd).html(),
+            content: $('#NewsContent', mainTd).text().replace(/\s/g, '\t').replace(/(&nbsp;){1,}/ig, '\n'),
             // 来源作者
             author: $('tr', mainTd).eq(2).text().search(/供稿人.(.+)发布/) !== -1 ? $('tr', mainTd).eq(2).text().match(/供稿人.(.+)发布/)[1].trim() : '',
             // 时间
@@ -87,7 +85,6 @@ function getContent(urls) {
           cb(null);
         })
         .catch(err => {
-          // console.log(err);
           logger.error('匹配新闻内容:' + err);
         });
     }, err => {
@@ -102,23 +99,13 @@ function getContent(urls) {
 }
 
 exports.getNews = function () {
+
   // 获取上次匹配进度Flag
   var flag = 'http://news.hpu.edu.cn/news/contents/544/121223.html';
   // 获取urls
-  Promise.resolve(getUrls(flag))
+  return Promise.resolve(getUrls(flag))
     // 获取内容
     .then(urls => {
-      console.log('开始获取内容');
-
       return Promise.resolve(getContent(urls));
     })
-    // 解构新闻内容以及本次匹配进度
-    .then(([newsRes, url]) => {
-      console.log(newsRes);
-      console.log(url);
-    })
-    .catch(err => {
-      // console.log(err);
-      logger.error('新闻网内容抓取失败:' + err);
-    });
 }

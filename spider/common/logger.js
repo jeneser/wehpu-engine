@@ -18,7 +18,7 @@ log4js.configure({
   categories: {
     default: {
       appenders: ['cheese'],
-      level: config.debug ? 'INFO' : 'ERROR'
+      level: 'INFO'
     }
   }
 });
