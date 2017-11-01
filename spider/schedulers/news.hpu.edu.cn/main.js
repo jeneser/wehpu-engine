@@ -5,6 +5,9 @@ var logger = require('../../common/logger');
 var request = require('superagent');
 require('superagent-charset')(request);
 
+var News = require('../../models/news');
+var Scheduler = require('../../models/scheduler');
+
 /**
  * 获取urls
  * @return {Promise} urls 结果数组
@@ -99,13 +102,34 @@ function getContent(urls) {
 }
 
 exports.getNews = function () {
-
-  // 获取上次匹配进度Flag
-  var flag = 'http://news.hpu.edu.cn/news/contents/544/121223.html';
-  // 获取urls
-  return Promise.resolve(getUrls(flag))
+  return News
+    // 获取上次匹配进度Flag
+    .findOne({
+      id: 'news'
+    })
+    // 获取urls
+    .then(doc => {
+      return Promise.resolve(getUrls(doc.flag));
+    })
     // 获取内容
     .then(urls => {
       return Promise.resolve(getContent(urls));
+    })
+    // 解构新闻内容以及本次匹配进度
+    .then(([newsRes, url]) => {
+      // 批量插入新闻结果
+      News.collection.insert(newsRes);
+
+      return url;
+    })
+    // 更新匹配进度
+    .then(url => {
+      return Promise.resolve(Scheduler.findOneAndUpdate({
+        id: 'news'
+      }, {
+        $set: {
+          flag: url
+        }
+      }));
     })
 }

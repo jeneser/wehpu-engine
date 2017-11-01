@@ -10,12 +10,6 @@ var config = {
     dayOfWeek: [1, 3, 5]
   },
 
-  // 妥善保管用户账户
-  userInfo: {
-    studentId: '311509040120',
-    vpnPassWord: '211219'
-  },
-
   // cheerio配置
   cheerioConfig: {
     // True 屏蔽不规范源码

@@ -5,6 +5,9 @@ var logger = require('../../common/logger');
 var request = require('superagent');
 require('superagent-charset')(request);
 
+var Logistics = require('../../models/logistics');
+var Scheduler = require('../../models/scheduler');
+
 /**
  * 获取urls
  * @return {Promise} urls 结果数组
@@ -101,22 +104,34 @@ function getContent(urls) {
 }
 
 exports.getNews = function () {
-  // 获取上次匹配进度Flag
-  var flag = '/dsh/Pchome/newsInfoDesc/a88b7b95-5a95-4d41-9088-a7f90126e2d9';
-  // 获取urls
-  return Promise.resolve(getUrls(flag))
+  return Logistics
+    // 获取上次匹配进度Flag
+    .findOne({
+      id: 'logistics'
+    })
+    .then(doc => {
+      // 获取urls
+      return Promise.resolve(getUrls(doc.flag))
+    })
     // 获取内容
     .then(urls => {
-      // console.log(urls);
       return Promise.resolve(getContent(urls));
     })
     // 解构内容以及本次匹配进度
     .then(([newsRes, url]) => {
-      console.log(newsRes);
-      console.log(url);
+      // 批量插入新闻结果
+      Logistics.collection.insert(newsRes);
+
+      return url;
     })
-    .catch(err => {
-      // console.log(err);
-      logger.error('后勤网内容抓取失败:' + err);
-    });
+    // 更新匹配进度
+    .then(url => {
+      return Promise.resolve(Scheduler.findOneAndUpdate({
+        id: 'logistics'
+      }, {
+        $set: {
+          flag: url
+        }
+      }));
+    })
 }
