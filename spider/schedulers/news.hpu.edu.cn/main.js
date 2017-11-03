@@ -38,8 +38,10 @@ function getUrls(flag) {
         });
         // 返回结果数组
         if (urls.length > 0) {
-          // 截取未抓取过的urls
-          var _urls = urls.slice(0, urls.findIndex(i => i === flag));
+          // 上次匹配位置
+          var index = urls.findIndex(i => i === flag);
+          // 截取最新内容
+          var _urls = index === -1 ? urls.slice(0) : urls.slice(0, index);
 
           if (_urls.length === 0) {
             reject('无最新新闻，已结束本次任务');
