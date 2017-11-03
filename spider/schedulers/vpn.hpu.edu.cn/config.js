@@ -5,8 +5,8 @@
 var config = {
   // 教务公告定时任务 星期一/星期三/星期五 凌晨2:30
   rule: {
-    hour: 2,
-    minute: 30,
+    hour: 15,
+    minute: 22,
     dayOfWeek: [1, 3, 5]
   },
 

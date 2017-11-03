@@ -22,5 +22,5 @@ exports.run = function () {
    * vpn.hpu.edu.cn
    * 星期一/星期三/星期五 凌晨2:30
    */
-  jNotices();
+  jNotices.run();
 }

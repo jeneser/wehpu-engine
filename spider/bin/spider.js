@@ -17,5 +17,5 @@ connectdb
     app.run();
   })
   .catch(err => {
-    logger.error('连接数据库失败，已取消任务', err);
+    logger.error('初始化失败，已取消任务', err);
   });
