@@ -139,47 +139,60 @@ function downloadNotice(agent, urls) {
               // 资源内容
               var content = $('#Label3', 'body').text().replace(/\s/g, '\t').replace(/(&nbsp;){1,}/ig, '\n');
 
+              // 解构 [临时路径, 文本内容, mime类型]
               resolve(['', content, '']);
             } else {
               // 文件后缀转换
               var _suffix = util.mimeToExt(res.type);
-              // 文件名
-              var fileName = uuidv4();
-              // 后缀 TODO
+              // 前缀文件名
+              var fileName = 'prefix-notice-' + uuidv4();
+              // 后缀
               var suffix = '.' + (_suffix ? _suffix : 'unknown');
               // 临时文件路径
               var tmpPath = path.join(__dirname, '../../tmpdir/', fileName + suffix);
               // 写流
               var writeStream = fs.createWriteStream(tmpPath);
 
-              // 请求资源
-              agent
-                .get(config.baseUrl + item.href)
-                .redirects(1)
-                .pipe(writeStream);
+              // 判断文件合法性
+              if (+res.header['content-length'] > +config.limitUploadSize || util.filterMime(res.type) === false) {
+                // 移除临时文件
+                util.unlink(tmpPath);
 
-              // 监听状态
-              writeStream.on('close', () => {
-                // 返回临时路径，mime类型
-                resolve([tmpPath, '', res.type]);
-              });
-              writeStream.on('error', () => {
-                reject('保存本地失败');
-              })
+                resolve(['']);
+              } else {
+                // 请求资源
+                agent
+                  .get(config.baseUrl + item.href)
+                  .redirects(1)
+                  .pipe(writeStream);
+
+                // 监听状态
+                writeStream.on('close', () => {
+                  // 解构 [临时路径, 文本内容, mime类型, 文件大小]
+                  resolve([tmpPath, '', res.type, res.header['content-length']]);
+                });
+                writeStream.on('error', () => {
+                  resolve(['']);
+                })
+              }
             }
           });
         })
-        // 上传OSS
-        .then(([tmpPath, content, mime]) => {
+        // 上传至OSS
+        .then(([tmpPath, content, mime, filesize]) => {
           return new Promise((resolve, reject) => {
-            if (tmpPath && mime) {
+            if (tmpPath && mime && filesize) {
+              // 上传文件
               Promise.resolve(fileUpload.upload({
                   folder: 'notice',
                   file: tmpPath,
-                  mime: mime
+                  mime: mime,
+                  filesize: filesize,
+                  limit: config.limitUploadSize
                 }))
                 .then(ossUrl => {
                   if (ossUrl) {
+                    // 文件存储位置
                     notice.href = ossUrl;
                     notice.content = '';
 
@@ -191,10 +204,24 @@ function downloadNotice(agent, urls) {
                 .catch(err => {
                   logger.error('非法文件，已跳过', err);
 
+                  // 置空
+                  notice.href = '';
+                  notice.content = '';
+
+                  notices.push(notice);
+
                   cb(null);
                 });
             } else if (content) {
+              // 公告网页内容
               notice.content = content;
+              notice.href = '';
+
+              notices.push(notice);
+
+              cb(null);
+            } else {
+              notice.content = '';
               notice.href = '';
 
               notices.push(notice);

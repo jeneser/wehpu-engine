@@ -5,8 +5,8 @@
 var config = {
   // 教务公告定时任务 星期一/星期三/星期五 凌晨2:30
   rule: {
-    hour: 9,
-    minute: 51,
+    hour: 13,
+    minute: 42,
     dayOfWeek: [1, 3, 5, 6]
   },
 
@@ -21,7 +21,7 @@ var config = {
   },
 
   // 限制上传文件大小 20M > 20971520 bytes
-  limitFilesize: 20971520,
+  limitUploadSize: 20971520,
 
   // 限制最大并发数量
   limitParallel: 5,

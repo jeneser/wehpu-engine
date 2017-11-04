@@ -1,3 +1,4 @@
+var fs = require('fs');
 var crypto = require('crypto');
 var config = require('../config');
 var mimeWhiteList = require('./whiteList');
@@ -48,4 +49,14 @@ exports.filterMime = function (mime) {
   });
 
   return _mime ? true : false;
+}
+
+/**
+ * 删除磁盘文件
+ * @param {String} path 文件路径
+ */
+exports.unlink = function (path) {
+  if (fs.existsSync(path)) {
+    fs.unlink(path);
+  }
 }
