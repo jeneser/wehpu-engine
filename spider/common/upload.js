@@ -19,8 +19,14 @@ exports.upload = function (params) {
   var params = params || {};
 
   return new Promise((resolve, reject) => {
+    // 过滤非法文件
     if (!util.filterMime(params.mime)) {
-      reject('非法文件类型');
+      // 移除临时文件
+      if (fs.existsSync(params.file)) {
+        fs.unlink(params.file);
+      }
+
+      reject('非法文件类型 ' + params.mime);
     } else {
       // 上传文件
       client
@@ -38,7 +44,7 @@ exports.upload = function (params) {
             fs.unlink(params.file);
           }
 
-          logger.error('上传OSS失败');
+          logger.error('上传OSS失败', err);
 
           reject('上传OSS失败');
         })
