@@ -95,8 +95,6 @@ function getNoticeUrls(data, flag) {
       if (_urls.length) {
         // 返回抓取结果以及第一条URL
         resolve([_urls, urls[0].href]);
-
-        logger.info(_urls);
       } else {
         reject('无最新公告，已结束本次任务');
       }

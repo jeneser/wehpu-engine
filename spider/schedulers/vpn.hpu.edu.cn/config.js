@@ -5,9 +5,9 @@
 var config = {
   // 教务公告定时任务 星期一/星期三/星期五 凌晨2:30
   rule: {
-    hour: 13,
-    minute: 42,
-    dayOfWeek: [1, 3, 5, 6]
+    hour: 18,
+    minute: 30,
+    dayOfWeek: [1, 3, 5]
   },
 
   // cheerio配置
