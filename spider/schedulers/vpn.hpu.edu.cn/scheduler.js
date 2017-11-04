@@ -20,7 +20,11 @@ exports.run = function () {
         logger.info('Completed', '教务公告定时任务', (new Date() - t) + 'ms');
       })
       .catch(err => {
-        logger.error('Completed', '教务公告定时任务失败', err, (new Date() - t) + 'ms');
+        if (err.timeout) {
+          logger.error('Completed', '教务公告定时任务失败', '网络超时，已结束任务', (new Date() - t) + 'ms');
+        } else {
+          logger.error('Completed', '教务公告定时任务失败', err, (new Date() - t) + 'ms');
+        }
       });
   });
 }
