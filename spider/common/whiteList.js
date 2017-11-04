@@ -21,8 +21,16 @@ const mimeWhiteList = [
     ext: 'xlsx'
   },
   {
+    mime: 'application/x-zip-compressed',
+    ext: 'zip'
+  },
+  {
     mime: 'application/zip',
     ext: 'zip'
+  },
+  {
+    mime: 'application/octet-stream',
+    ext: 'rar'
   },
   {
     mime: 'application/x-rar-compressed',
