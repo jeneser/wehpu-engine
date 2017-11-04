@@ -14,6 +14,7 @@ var request = require('superagent');
 require('superagent-charset')(request);
 
 var Lecture = require('../../models/lecture');
+var Notice = require('../../models/notice');
 var Scheduler = require('../../models/scheduler');
 
 /**
@@ -76,21 +77,26 @@ function getNoticeUrls(data, flag) {
 
     $ = cheerio.load(data, config.cheerioConfig);
 
-    // 匹配URLs
+    // 匹配URL和公告标题
     $('a', '.panes div div span').each((i, elem) => {
       // 并入数组
-      urls.push($(elem).attr('href'));
+      urls.push({
+        href: $(elem).attr('href'),
+        title: $(elem).text().trim()
+      });
     });
 
     if (urls.length > 0) {
       // 上次匹配位置
-      var index = urls.findIndex(i => i === flag);
+      var index = urls.findIndex(i => i.href === flag);
       // 截取最新内容
       var _urls = index === -1 ? urls.slice(0) : urls.slice(0, index);
 
       if (_urls.length) {
         // 返回抓取结果以及第一条URL
-        resolve([_urls, urls[0]]);
+        resolve([_urls, urls[0].href]);
+
+        logger.info(_urls);
       } else {
         reject('无最新公告，已结束本次任务');
       }
@@ -107,62 +113,110 @@ function getNoticeUrls(data, flag) {
  */
 function downloadNotice(agent, urls) {
   return new Promise((resolve, reject) => {
+    if (!urls.length) {
+      reject('无最新资源，已结束任务');
+    }
 
-    // for (let i; i < urls.length; i++) {
-    //   let fileName
-    // }
+    // 处理结果
+    var notices = [];
 
+    async.eachSeries(urls, (item, cb) => {
+      var notice = {};
 
-    // 获取文件类型
-    agent
-      .get(config.baseUrl + urls[0])
-      .redirects(1)
-      // 下载文件到本地
-      .then(res => {
-        return new Promise((resolve, reject) => {
-          // 文件名
-          var fileName = uuidv4();
-          // 后缀 TODO
-          var suffix = '.' + util.mimeToExt(res.type);
-          // 临时文件路径
-          var tmpPath = path.join(__dirname, '../../tmpdir/', fileName + suffix);
-          // 写流
-          var writeStream = fs.createWriteStream(tmpPath);
+      notice.title = item.title;
 
-          // 请求资源
-          agent
-            .get(config.baseUrl + urls[0])
-            .redirects(1)
-            .pipe(writeStream);
+      // 获取文件类型
+      agent
+        .get(config.baseUrl + item.href)
+        .redirects(1)
+        // 处理结果
+        .then(res => {
+          return new Promise((resolve, reject) => {
+            // 抓取网页内容 text/html
+            if (/text\/html/.test(res.type.toLowerCase())) {
+              $ = cheerio.load(res.text, config.cheerioConfig);
 
-          // 监听状态
-          writeStream.on('close', () => {
-            // 返回临时路径，mime类型
-            resolve([tmpPath, res.type]);
+              // 资源内容
+              var content = $('#Label3', 'body').text().replace(/\s/g, '\t').replace(/(&nbsp;){1,}/ig, '\n');
+
+              resolve(['', content, '']);
+            } else {
+              // 文件后缀转换
+              var _suffix = util.mimeToExt(res.type);
+              // 文件名
+              var fileName = uuidv4();
+              // 后缀 TODO
+              var suffix = '.' + (_suffix ? _suffix : 'unknown');
+              // 临时文件路径
+              var tmpPath = path.join(__dirname, '../../tmpdir/', fileName + suffix);
+              // 写流
+              var writeStream = fs.createWriteStream(tmpPath);
+
+              // 请求资源
+              agent
+                .get(config.baseUrl + item.href)
+                .redirects(1)
+                .pipe(writeStream);
+
+              // 监听状态
+              writeStream.on('close', () => {
+                // 返回临时路径，mime类型
+                resolve([tmpPath, '', res.type]);
+              });
+              writeStream.on('error', () => {
+                reject('保存本地失败');
+              })
+            }
           });
-          writeStream.on('error', () => {
-            reject('保存本地失败');
-          })
+        })
+        // 上传OSS
+        .then(([tmpPath, content, mime]) => {
+          return new Promise((resolve, reject) => {
+            if (tmpPath && mime) {
+              Promise.resolve(fileUpload.upload({
+                  folder: 'notice',
+                  file: tmpPath,
+                  mime: mime
+                }))
+                .then(ossUrl => {
+                  if (ossUrl) {
+                    notice.href = ossUrl;
+                    notice.content = '';
+
+                    notices.push(notice);
+
+                    cb(null);
+                  }
+                })
+                .catch(err => {
+                  logger.error('非法文件，已跳过', err);
+
+                  cb(null);
+                });
+            } else if (content) {
+              notice.content = content;
+              notice.href = '';
+
+              notices.push(notice);
+
+              cb(null);
+            }
+          });
+        })
+        .catch(err => {
+          logger.error('处理教务公告出错', err);
+
+          cb(err);
         });
-      })
-      // 上传OSS
-      .then(([tmpPath, mime]) => {
-        logger.info(tmpPath);
-
-        return Promise.resolve(fileUpload.upload({
-          folder: 'notice',
-          file: tmpPath,
-          mime: mime
-        }));
-      })
-      .then(url => {
-        logger.info('OSS地址', url);
-      })
-      .catch(err => {
-        logger.error(err);
-
-        reject('over');
-      });
+    }, err => {
+      if (err) {
+        logger.error('处理教务公告出错', err);
+      } else if (notices.length) {
+        resolve(notices);
+      } else {
+        reject('无最新内容，已结束本次任务');
+      }
+    });
   });
 }
 
@@ -188,15 +242,17 @@ exports.getNews = function () {
   // 登录VPN
   return Promise.resolve(HPUVpnLogin.login(userInfo))
     .then(agent => {
+      // 暂存cookie
       _agent = agent;
 
+      // 请求教务公告列表
       return agent.get(config.commonUrl);
     })
     .then(vpnRes => {
-      // 暂存源码
+      // 暂存源码资源
       source = vpnRes.text;
     })
-    // // 获取上次匹配进度Flag
+    // 获取上次讲座匹配进度Flag
     .then(() => {
       return Scheduler
         .findOne({
@@ -208,6 +264,7 @@ exports.getNews = function () {
           flags.lecture = flag;
         })
     })
+    // 获取上次公告匹配进度Flag
     .then(() => {
       return Scheduler
         .findOne({
@@ -223,6 +280,7 @@ exports.getNews = function () {
     .then(() => {
       return Promise.resolve(getLecture(source, flags.lecture));
     })
+    // 讲座信息入库
     .then(([lectureRes, flag]) => {
       if (lectureRes.length) {
         // 批量插入讲座结果
@@ -250,5 +308,23 @@ exports.getNews = function () {
       flags.notice = flag;
 
       return Promise.resolve(downloadNotice(_agent, noticeUrls));
+    })
+    // 最新公告入库
+    .then(noticesRes => {
+      if (noticesRes.length) {
+        // 批量插入公告结果
+        Notice.collection.insert(noticesRes);
+
+        // 更新本次进度
+        return Promise.resolve(Scheduler.findOneAndUpdate({
+          id: 'notice'
+        }, {
+          $set: {
+            flag: flags.notice
+          }
+        }, {
+          upsert: true
+        }));
+      }
     })
 }
