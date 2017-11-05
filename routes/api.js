@@ -14,6 +14,8 @@ var physicalController = require('../controllers/physical');
 
 var calendarController = require('../controllers/calendar');
 
+var newsController = require('../controllers/news');
+
 var feedbackController = require('../controllers/feedback');
 var donationController = require('../controllers/donation');
 
@@ -85,6 +87,16 @@ router.get('/physical', physicalController.physical);
  */
 router.get('/calendar', calendarController.calendar);
 
+/**
+ * 新闻聚合
+ * @method get
+ * @param {String} [openId] 包含在token中的openId
+ * @param {String} classify param 新闻分类
+ * @param {String} start query 起始项
+ * @param {String} count query 条目数
+ * @return {RES} statusCode 200/400/403/404/500 查询成功/格式错误/无权/无结果/失败
+ */
+router.get('/rss/:classify', auth.ensureAuthorized, newsController.news);
 
 /**
  * 反馈
