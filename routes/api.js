@@ -19,6 +19,8 @@ var newsController = require('../controllers/news');
 var feedbackController = require('../controllers/feedback');
 var donationController = require('../controllers/donation');
 
+var uploadController = require('../controllers/upload');
+
 /**
  * 登录&注册
  * @method POST
@@ -113,5 +115,15 @@ router.post('/feedback', auth.ensureAuthorized, feedbackController.feedback);
  * @return {RES} statusCode 200/500 捐赠列表获取成功/失败
  */
 router.get('/donation', donationController.donation);
+
+/**
+ * 文件上传
+ * @method post
+ * @param {String} folder 目标文件夹
+ * @param {*} file 目标文件字段
+ * @param {String} prefix 文件前缀
+ * @return {RES} statusCode 201/400/500 上传成功/失败
+ */
+router.post('/upload', uploadController.upload);
 
 module.exports = router;
