@@ -1,24 +1,68 @@
+var fs = require('fs');
 var crypto = require('crypto');
 var config = require('../config');
-var request = require('superagent');
-var cheerio = require('cheerio');
-var config = require('../config');
-
-var User = require('../models/user');
-
-// cheerio配置
-var cheerioConfig = {
-  // True 屏蔽urp不规范源码
-  xmlMode: true,
-  decodeEntities: true,
-  lowerCaseTags: true,
-  lowerCaseAttributeNames: true,
-  ignoreWhitespace: true
-};
+var mimeWhiteList = require('./whiteList');
 
 /**
- * 处理校历信息，确保必定返回信息
- * TODO：自行计算校历
+ * AES加密
+ * @param {String} data 加密数据
+ */
+exports.aesEncrypt = function (data) {
+  const cipher = crypto.createCipher(config.commonAlgorithm, config.commonSecret);
+  var crypted = cipher.update(data, 'utf8', 'hex');
+  crypted += cipher.final('hex');
+  return crypted;
+}
+
+/**
+ * AES解密
+ * @param {String} encrypted 解密数据
+ */
+exports.aesDecrypt = function (encrypted) {
+  const decipher = crypto.createDecipher(config.commonAlgorithm, config.commonSecret);
+  var decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
+/**
+ * MIME类型转扩展名
+ * @param {String} type mime类型
+ * @return {String} ext 对应的扩展名
+ */
+exports.mimeToExt = function (type) {
+  var mime = mimeWhiteList.find(elem => {
+    return elem.mime.toLowerCase() === type.toLowerCase();
+  });
+
+  return mime ? mime.ext : '';
+}
+
+/**
+ * 过滤非白名单mime类型
+ * @param {String} type mime类型
+ * @return {Boolean} 合法文件类型
+ */
+exports.filterMime = function (mime) {
+  var _mime = mimeWhiteList.find(elem => {
+    return elem.mime.toLowerCase() === mime.toLowerCase();
+  });
+
+  return _mime ? true : false;
+}
+
+/**
+ * 删除磁盘文件
+ * @param {String} path 文件路径
+ */
+exports.unlink = function (path) {
+  if (fs.existsSync(path)) {
+    fs.unlink(path);
+  }
+}
+
+/**
+ * 处理校历信息
  * @return {Promise} 处理结果
  */
 exports.getCalendar = function () {
@@ -36,40 +80,5 @@ exports.getCalendar = function () {
     calendar.currentWeekly = (Date.now() > Date.parse(calendar.termStart)) ? calendar.totalWeekly : Math.ceil((Date.now() - Date.parse(calendar.termStart)) / 604800000);
 
     resolve(calendar);
-  });
-}
-
-/**
- * 获取用户基本密码信息
- * @return {Promise} 通用密码
- */
-exports.getUserInfo = function (openId) {
-  // 查询用户
-  return new Promise((resolve, reject) => {
-    Promise.resolve(
-        User.findOne({
-          openId: openId
-        })
-      )
-      .then(person => {
-        if (person) {
-          // 解密
-          var decipher = crypto.createDecipher(
-            config.commonAlgorithm,
-            config.commonSecret
-          );
-
-          var userInfo = {
-            studentId: person.studentId,
-            vpnPassWord: decipher.update(person.vpnPassWord, 'hex', 'utf8'),
-            jwcPassWord: decipher.update(person.jwcPassWord, 'hex', 'utf8'),
-            idNumber: decipher.update(person.idNumber, 'hex', 'utf8')
-          };
-
-          resolve(userInfo);
-        } else {
-          reject('获取用户信息失败');
-        }
-      });
   });
 }
