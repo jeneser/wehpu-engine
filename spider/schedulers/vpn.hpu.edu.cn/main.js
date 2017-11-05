@@ -1,6 +1,5 @@
 var fs = fs = require('fs');
 var path = require('path');
-var crypto = require('crypto');
 var cheerio = require('cheerio');
 var async = require('async');
 var uuidv4 = require('uuid/v4');

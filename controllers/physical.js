@@ -1,7 +1,6 @@
-var logger = require('../common/logger');
-var util = require('../common/util');
 var request = require('superagent');
-
+var logger = require('../common/logger');
+var handleUser = require('../common/user');
 var handlePhysical = require('../common/physical');
 
 // 保存Cookie
@@ -12,7 +11,7 @@ exports.physical = function (req, res, next) {
 
   // 查询用户，获取教务资源登录密码
   Promise
-    .resolve(util.getUserInfo(openId))
+    .resolve(handleUser.getUserInfo(openId))
     .then(userInfo => {
       return agent
         .post('http://218.196.240.158/index.aspx')

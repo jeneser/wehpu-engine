@@ -3,6 +3,7 @@ var config = require('../config');
 var HPUVpnLogin = require('../vendor/HPUVpnLogin');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var logger = require('../common/logger');
+var util = require('../common/util');
 
 var User = require('../models/user');
 
@@ -102,14 +103,9 @@ exports.bind = function (req, res, next) {
     // 更新绑定信息
     .then(() => {
       // 加密存储
-      var cipher = crypto.createCipher(
-        config.commonAlgorithm,
-        config.commonSecret
-      );
-
-      var _vpnPassWord = cipher.update(vpnPassWord, 'utf8', 'hex');
-      var _jwcPassWord = cipher.update(jwcPassWord, 'utf8', 'hex');
-      var _idNumber = cipher.update(idNumber, 'utf8', 'hex');
+      var _vpnPassWord = util.aesEncrypt(vpnPassWord);
+      var _jwcPassWord = util.aesEncrypt(jwcPassWord);
+      var _idNumber = util.aesEncrypt(idNumber);
 
       return Promise.resolve(
         User.update({

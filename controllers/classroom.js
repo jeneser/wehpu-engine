@@ -1,10 +1,9 @@
-var crypto = require('crypto');
 var config = require('../config');
 var cheerio = require('cheerio');
 var logger = require('../common/logger');
 var HPUUrpLogin = require('../vendor/HPUUrpLogin');
 var handleClassroom = require('../common/classroom');
-var util = require('../common/util');
+var handleUser = require('../common/user');
 
 var User = require('../models/user');
 
@@ -37,7 +36,7 @@ exports.classroom = function (req, res, next) {
 
   // 查询用户，获取教务资源登录密码
   Promise
-    .resolve(util.getUserInfo(openId))
+    .resolve(handleUser.getUserInfo(openId))
     .then(userInfo => {
       return Promise.resolve(HPUUrpLogin.login({
         studentId: userInfo.studentId,
