@@ -11,6 +11,7 @@ var classroomController = require('../controllers/classroom');
 var courseController = require('../controllers/course');
 var scoreController = require('../controllers/score');
 var physicalController = require('../controllers/physical');
+var libraryController = require('../controllers/library');
 
 var calendarController = require('../controllers/calendar');
 
@@ -88,6 +89,20 @@ router.get('/physical', physicalController.physical);
  * @return {RES} statusCode 200/404 校历获取成功/失败
  */
 router.get('/calendar', calendarController.calendar);
+
+/**
+ * 图书借阅
+ * @method get
+ * @return {RES} statusCode
+ */
+router.get('/library/borrowing', libraryController.borrowing);
+
+/**
+ * 图书检索
+ * @method get
+ * @return {RES} statusCode
+ */
+router.get('/library/books', libraryController.books);
 
 /**
  * 新闻聚合
