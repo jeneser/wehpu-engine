@@ -105,6 +105,13 @@ router.get('/library/borrowing', libraryController.borrowing);
 router.get('/library/books', libraryController.books);
 
 /**
+ * 图书检索
+ * @method get
+ * @return {RES} statusCode
+ */
+router.get('/library/books/:id', libraryController.books);
+
+/**
  * 新闻聚合
  * @method get
  * @param {String} [openId] 包含在token中的openId

@@ -60,3 +60,41 @@ exports.borrowing = function (data) {
     }
   })
 }
+
+/**
+ * 处理查询结果
+ */
+exports.books = function (data) {
+  return new Promise((resolve, reject) => {
+    var books = [];
+    $ = cheerio.load(data, cheerioConfig);
+    var table = $('#ctl00_ContentPlaceHolder1_GridView1');
+    $('tr', $(table))
+      .each((i, elem) => {
+        var book = {};
+
+        // TODO: 修改匹配规则
+        var a = $('a', $(elem));
+        var span = $('span', $(elem));
+
+        // 书名
+        book.title = a.text();
+        // id
+        book.id = a.attr('href').split('=')[1];
+        // 索书号
+        book.callNumber = span.eq(1).text();
+        // 作者
+        book.author = span.eq(3).text();
+        // 出版社
+        book.publisher = span.eq(5).text();
+
+        books.push(book);
+      });
+
+    if (books.length) {
+      resolve(books);
+    } else {
+      reject('处理搜索结果失败');
+    }
+  });
+}
