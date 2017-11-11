@@ -7,10 +7,8 @@
   "license": "MIT",
   "main": "app.js",
   "scripts": {
-    "start": "node ./bin/www"
-  },
-  "standard": {
-    "globals": ["$"]
+    "start": "node ./bin/www",
+    "lint": "standard --fix"
   },
   "dependencies": {
     "ali-oss": "^4.11.0",
