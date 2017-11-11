@@ -19,8 +19,6 @@ exports.login = function (req, res, next) {
   var iv = req.body.iv
 
   if (!code && !encryptedData && !iv) {
-    logger.warn('请求格式错误')
-
     res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误'

@@ -33,7 +33,10 @@ var config = {
     'Cache-Control': 'max-age=0',
     Referer: 'https://vpn.hpu.edu.cn/por/login_psw.csp?rnd=0.4288785251262913#http%3A%2F%2Fvpn.hpu.edu.cn%2F',
     Cookie: 'language=en_US; TWFID=1683ff4c80034a2e; collection=%7Bauto_login_count%3A0%7D; VpnLine=http%3A%2F%2Fvpn.hpu.edu.cn%2F; g_LoginPage=login_psw; VisitTimes=0; haveLogin=0'
-  }
+  },
+
+  // 网络超时 3s
+  timeout: 3000
 }
 
 /**
@@ -65,6 +68,9 @@ exports.login = function (params) {
       })
       .send({
         svpn_password: rsa.encrypt(params.vpnPassWord)
+      })
+      .timeout({
+        response: config.timeout
       })
       .redirects()
       .then(() => {

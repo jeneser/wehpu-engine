@@ -84,7 +84,10 @@ var config = {
     Connection: 'keep-alive',
     'Upgrade-Insecure-Requests': '1',
     'Cache-Control': 'max-age=0'
-  }
+  },
+
+  // 网络超时 3s
+  timeout: 3000
 }
 
 /**
@@ -105,6 +108,9 @@ function ocr (agent, fileName) {
     (function _ocr () {
       agent
         .get(config.urpVerCode)
+        .timeout({
+          response: config.timeout
+        })
         .then(verCode => {
           return new Promise((_resolve, _reject) => {
             // 创建写流
@@ -207,6 +213,9 @@ exports.login = function (params) {
       .send({
         svpn_password: rsa.encrypt(params.vpnPassWord)
       })
+      .timeout({
+        response: config.timeout
+      })
       .redirects()
       // 识别URP验证码
       .then(() => {
@@ -232,9 +241,12 @@ exports.login = function (params) {
             mm: params.jwcPassWord,
             v_yzm: verCodeIdentified
           })
+          .timeout({
+            response: config.timeout
+          })
           .redirects()
       })
-      // 登录成功,访问教务资源 TODO:判断是否访问成功
+      // 登录成功,访问教务资源
       .then(() => {
         if (params.method.toLowerCase() === 'post') {
           return Promise.resolve(agent)

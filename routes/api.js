@@ -79,8 +79,7 @@ router.post('/classroom', auth.ensureAuthorized, classroomController.classroom)
  * @method get
  * @param {String} [openId] 包含在token中的openId
  */
-// router.get('/physical', auth.ensureAuthorized, physicalController.physical);
-router.get('/physical', physicalController.physical)
+router.get('/physical', auth.ensureAuthorized, physicalController.physical)
 
 /**
  * 校历
@@ -94,7 +93,7 @@ router.get('/calendar', calendarController.calendar)
  * @method get
  * @return {RES} statusCode
  */
-router.get('/library/borrowing', libraryController.borrowing)
+router.get('/library/borrowing', auth.ensureAuthorized, libraryController.borrowing)
 
 /**
  * 图书检索
@@ -145,6 +144,6 @@ router.get('/donation', donationController.donation)
  * @param {String} prefix 文件前缀
  * @return {RES} statusCode 201/400/500 上传成功/失败
  */
-router.post('/upload', uploadController.upload)
+router.post('/upload', auth.ensureAuthorized, uploadController.upload)
 
 module.exports = router

@@ -1,5 +1,7 @@
 /**
  * 模拟登录河南理工大学图书馆系统
+ * MIT Copyright (c) 2017 Jeneser
+ * Source: https://github.com/jeneser
  */
 
 var request = require('superagent')
@@ -19,7 +21,10 @@ var config = {
     DNT: '1',
     'Cache-Control': 'max-age=0',
     Referer: 'http://lib.hpu.edu.cn/mylib.html'
-  }
+  },
+
+  // 网络超时
+  timeout: 3000
 }
 
 /**
@@ -41,6 +46,9 @@ exports.login = function (params) {
       .send({
         userid: params.studentId,
         password: params.passWord
+      })
+      .timeout({
+        response: config.timeout
       })
       .redirects()
       .then(res => {
