@@ -12,7 +12,7 @@ var cheerioConfig = {
 
 // 清理字段信息
 var cleanField = function (elem, index) {
-  return elem.eq(index).text().trim()
+  return elem.eq(index).text().trim().replace(/(&nbsp;){1,}/ig, '')
 }
 
 /**
@@ -52,27 +52,23 @@ exports.borrowing = function (data) {
         books.push(book)
       })
 
-    if (books.length) {
-      resolve(books)
-    } else {
-      reject(new Error('处理借阅信息失败'))
-    }
+    resolve(books)
   })
 }
 
 /**
- * 处理查询结果
+ * 处理搜索结果
+ * @param {Object} data 页面原始内容
  */
 exports.books = function (data) {
   return new Promise((resolve, reject) => {
     var books = []
     var $ = cheerio.load(data, cheerioConfig)
     var table = $('#ctl00_ContentPlaceHolder1_GridView1')
-    $('tr', $(table))
+    $('table', $(table))
       .each((i, elem) => {
         var book = {}
 
-        // TODO: 修改匹配规则
         var a = $('a', $(elem))
         var span = $('span', $(elem))
 
@@ -81,19 +77,49 @@ exports.books = function (data) {
         // id
         book.id = a.attr('href').split('=')[1]
         // 索书号
-        book.callNumber = span.eq(1).text()
+        book.callNumber = cleanField(span, 1)
         // 作者
-        book.author = span.eq(3).text()
+        book.author = cleanField(span, 3)
         // 出版社
-        book.publisher = span.eq(5).text()
+        book.publisher = cleanField(span, 5)
 
         books.push(book)
       })
 
-    if (books.length) {
-      resolve(books)
-    } else {
-      reject(new Error('处理搜索结果失败'))
-    }
+    resolve(books)
+  })
+}
+
+/**
+ * 处理单个图书结果
+ * @param {Object} data 页面原始内容
+ */
+exports.book = function (data) {
+  return new Promise((resolve, reject) => {
+    var freeBooks = []
+    var $ = cheerio.load(data, cheerioConfig)
+    var table = $('#ctl00_ContentPlaceHolder1_GridView1')
+
+    $('tr', $(table))
+      .filter((i, elem) => {
+        return $(elem).attr('align') === 'left'
+      })
+      .each((i, elem) => {
+        var freeBook = {}
+        var td = $('td', $(elem))
+
+        // 馆藏位置
+        freeBook.place = cleanField(td, 0)
+        // 借出时间
+        freeBook.start = cleanField(td, 3)
+        // 到期时间
+        freeBook.end = cleanField(td, 4)
+        // 是否可借 1 可借 0 不可借
+        freeBook.state = cleanField(td, 5) === '可借' ? 1 : 0
+
+        freeBooks.push(freeBook)
+      })
+
+    resolve(freeBooks)
   })
 }

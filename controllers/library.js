@@ -10,12 +10,11 @@ exports.borrowing = function (req, res, next) {
   // 登录图书馆获取借阅信息
   Promise
     .resolve(HPULibLogin.login({
-      studentId: '',
-      passWord: '',
+      studentId: '311509040120',
+      passWord: '311509040120',
       url: 'http://218.196.244.90:8080/Borrowing.aspx'
     }))
     .then(libRes => {
-      // TODO: 检验是否登录成功
       return Promise.resolve(handleLibrary.borrowing(libRes.text))
     })
     .then(books => {
@@ -45,7 +44,7 @@ exports.books = function (req, res, next) {
 
   // 处理查询结果列表
   if (q) {
-    var searchParams = 'http://218.196.244.90:8080/SearchResult.aspx?KindOfSearch=1&FieldToSort=0&DirectionOfSort=DESC&StoreAtWhere=ALL&CountOfPage=30&SecSerchKey=&SecSerchWord=&Titlie=' + q + '&PYM=&ZTFL=&SSH=&ZRZ=&ISBN=&CSM=&CBS=&ZTC=&ZDY=&LAN=0'
+    var searchParams = 'http://218.196.244.90:8080/SearchResult.aspx?KindOfSearch=1&FieldToSort=0&DirectionOfSort=DESC&StoreAtWhere=ALL&CountOfPage=30&SecSerchKey=&SecSerchWord=&Titlie=' + encodeURI(q.substr(0, 15)) + '&PYM=&ZTFL=&SSH=&ZRZ=&ISBN=&CSM=&CBS=&ZTC=&ZDY=&LAN=0'
 
     request
       .get(searchParams)
@@ -54,11 +53,18 @@ exports.books = function (req, res, next) {
         return Promise.resolve(handleLibrary.books(libRes.text))
       })
       .then(books => {
-        res.status(200).json({
-          statusCode: 200,
-          errMsg: '获取成功',
-          data: books
-        })
+        if (books.length) {
+          res.status(200).json({
+            statusCode: 200,
+            errMsg: '获取成功',
+            data: books
+          })
+        } else {
+          res.status(404).json({
+            statusCode: 404,
+            errMsg: '无结果'
+          })
+        }
       })
       .catch(err => {
         logger.error('获取借阅信息失败', err)
@@ -73,16 +79,22 @@ exports.books = function (req, res, next) {
     request
       .get('http://218.196.244.90:8080/Book.aspx?id=' + id)
       .then(libRes => {
-        logger.info(libRes.text)
         // 处理查询结果
-        // return Promise.resolve(handleLibrary.books(libRes.text));
+        return Promise.resolve(handleLibrary.book(libRes.text))
       })
-      .then(books => {
-        res.status(200).json({
-          statusCode: 200,
-          errMsg: '获取成功',
-          data: books
-        })
+      .then(book => {
+        if (book.length) {
+          res.status(200).json({
+            statusCode: 200,
+            errMsg: '获取成功',
+            data: book
+          })
+        } else {
+          res.status(404).json({
+            statusCode: 404,
+            errMsg: '无结果'
+          })
+        }
       })
       .catch(err => {
         logger.error('获取借阅信息失败', err)
