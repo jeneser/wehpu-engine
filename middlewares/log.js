@@ -1,24 +1,24 @@
-var logger = require('../common/logger');
+var logger = require('../common/logger')
 
-var ignore = /^\/(public|stylesheets)/;
+var ignore = /^\/(public|stylesheets)/
 
 exports = module.exports = function (req, res, next) {
   // 忽略部分路由
   if (ignore.test(req.url)) {
-    next();
-    return;
+    next()
+    return
   }
 
   // 输出日志
-  var t = new Date();
-  logger.level = 'info';
-  logger.info('Started', req.method, req.url, req.ip);
+  var t = new Date()
+  logger.level = 'info'
+  logger.info('Started', req.method, req.url, req.ip)
 
   res.on('finish', () => {
-    var duration = ((new Date()) - t);
+    var duration = ((new Date()) - t)
 
-    logger.info('Completed', res.statusCode, '(' + duration + 'ms)');
-  });
+    logger.info('Completed', res.statusCode, '(' + duration + 'ms)')
+  })
 
-  next();
-};
+  next()
+}

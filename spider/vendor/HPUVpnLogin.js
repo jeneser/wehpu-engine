@@ -2,16 +2,16 @@
  * 模拟登录河南理工大学外网访问VPN服务
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/hpufe/fsociety-hpu
- * 
+ *
  * rsa-node
  * RSA加密算法库，用于加密VPN密码
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/jeneser/rsa-node
  */
 
-var RsaNode = require('rsa-node');
-var request = require('superagent');
-require('superagent-charset')(request);
+var RsaNode = require('rsa-node')
+var request = require('superagent')
+require('superagent-charset')(request)
 
 // 配置
 var config = {
@@ -37,7 +37,7 @@ var config = {
     Referer: 'https://vpn.hpu.edu.cn/por/login_psw.csp?rnd=0.4288785251262913#http%3A%2F%2Fvpn.hpu.edu.cn%2F',
     Cookie: 'language=en_US; TWFID=1683ff4c80034a2e; collection=%7Bauto_login_count%3A0%7D; VpnLine=http%3A%2F%2Fvpn.hpu.edu.cn%2F; g_LoginPage=login_psw; VisitTimes=0; haveLogin=0'
   }
-};
+}
 
 /**
  * 模拟登录
@@ -46,16 +46,16 @@ var config = {
  * @param {String} url 要访问的内网资源
  */
 exports.login = function (params) {
-  var params = params || {};
+  params = params || {}
 
   // 禁用https
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
   // 保存Cookie
-  var agent = request.agent();
+  var agent = request.agent()
 
   // 初始化RSA加密算法
-  var rsa = new RsaNode(config.KEY, config.EXP);
+  var rsa = new RsaNode(config.KEY, config.EXP)
 
   if (params.studentId && params.vpnPassWord) {
     // 登录VPN
@@ -76,12 +76,12 @@ exports.login = function (params) {
       .then(() => {
         // 如果没有url参数则返回agent
         if (params.url === '' || params.url === undefined) {
-          return Promise.resolve(agent);
+          return Promise.resolve(agent)
         } else {
-          return agent.get(params.url);
+          return agent.get(params.url)
         }
-      });
+      })
   } else {
-    return Promise.reject('参数错误');
+    return Promise.reject(new Error('参数错误'))
   }
-};
+}

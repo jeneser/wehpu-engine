@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
 
 var userSchema = new Schema({
   // 微信用户基本信息
@@ -43,8 +43,8 @@ var userSchema = new Schema({
     type: String,
     default: ''
   }
-});
+})
 
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model('User', userSchema)
 
-module.exports = User;
+module.exports = User

@@ -2,25 +2,25 @@
  * 模拟登录河南理工大学教务处URP系统
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/hpufe/fsociety-hpu
- * 
+ *
  * rsa-node
  * RSA加密算法库，用于加密VPN密码
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/jeneser/rsa-node
- * 
+ *
  * ocr
  * Tesseract自动识别教务处URP系统验证码
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/jeneser/rsa-node
  */
 
-var path = require('path');
-var fs = require('fs');
-var gm = require('gm');
-var RsaNode = require('rsa-node');
-var tesseract = require('node-tesseract');
-var request = require('superagent');
-require('superagent-charset')(request);
+var path = require('path')
+var fs = require('fs')
+var gm = require('gm')
+var RsaNode = require('rsa-node')
+var tesseract = require('node-tesseract')
+var request = require('superagent')
+require('superagent-charset')(request)
 
 // 配置
 var config = {
@@ -85,7 +85,7 @@ var config = {
     'Upgrade-Insecure-Requests': '1',
     'Cache-Control': 'max-age=0'
   }
-};
+}
 
 /**
  * 自动识别URP系统验证码
@@ -94,7 +94,7 @@ var config = {
  * @param {*} verCode 原始验证码图片
  * @return {Promise} Promise()
  */
-function ocr(agent, fileName) {
+function ocr (agent, fileName) {
   return new Promise((resolve, reject) => {
     // 验证码暂存路径
     var verCodePath = path.join(
@@ -102,13 +102,13 @@ function ocr(agent, fileName) {
       fileName + config.ocr.config.suffix
     );
     // 识别验证码
-    (function _ocr() {
+    (function _ocr () {
       agent
         .get(config.urpVerCode)
         .then(verCode => {
           return new Promise((_resolve, _reject) => {
             // 创建写流
-            var verCodeWriteStream = fs.createWriteStream(verCodePath);
+            var verCodeWriteStream = fs.createWriteStream(verCodePath)
             // 处理图片
             gm(verCode.body)
               // 减少图像中的斑点
@@ -119,14 +119,14 @@ function ocr(agent, fileName) {
               .resize(config.ocr.config.resize.w, config.ocr.config.resize.h)
               // 写入磁盘
               .stream()
-              .pipe(verCodeWriteStream);
+              .pipe(verCodeWriteStream)
             // 监听
             verCodeWriteStream.on('close', () => {
-              _resolve('验证码预处理成功');
-            });
+              _resolve('验证码预处理成功')
+            })
             verCodeWriteStream.on('error', () => {
-              _reject('磁盘写入出错');
-            });
+              _reject(new Error('磁盘写入出错'))
+            })
           }).then(() => {
             // 检查文件是否存在
             if (fs.existsSync(verCodePath)) {
@@ -138,38 +138,38 @@ function ocr(agent, fileName) {
                   if (err) {
                     // 递归，尝试3次
                     if (config.ocr.times < 3) {
-                      _ocr();
-                      config.ocr.times++;
+                      _ocr()
+                      config.ocr.times++
                     } else {
-                      reject('验证码识别出错');
+                      reject(new Error('验证码识别出错'))
                     }
                   } else {
-                    var ver = new RegExp('^[a-zA-Z0-9]{4}$');
+                    var ver = new RegExp('^[a-zA-Z0-9]{4}$')
                     if (ver.test(data.trim())) {
                       // 识别成功，删除临时文件
                       if (fs.existsSync(verCodePath)) {
-                        fs.unlink(verCodePath);
+                        fs.unlink(verCodePath)
                       }
                       // 返回结果
-                      resolve(data.trim());
+                      resolve(data.trim())
                     } else {
                       // 再次识别
-                      _ocr();
+                      _ocr()
                     }
                   }
                 }
-              );
+              )
             } else {
               // 再次识别
-              _ocr();
+              _ocr()
             }
-          });
+          })
         })
         .catch(err => {
-          reject('验证码识别出错');
-        });
-    })();
-  });
+          reject(err)
+        })
+    })()
+  })
 }
 
 /**
@@ -183,16 +183,16 @@ function ocr(agent, fileName) {
  * @return {Promise} Promise
  */
 exports.login = function (params) {
-  var params = params || {};
+  params = params || {}
 
   // 禁用https
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
   // 保存Cookie
-  var agent = request.agent();
+  var agent = request.agent()
 
   // 初始化RSA加密算法
-  var rsa = new RsaNode(config.KEY, config.EXP);
+  var rsa = new RsaNode(config.KEY, config.EXP)
 
   if (params.studentId && params.vpnPassWord && params.jwcPassWord) {
     return (
@@ -210,7 +210,7 @@ exports.login = function (params) {
       .redirects()
       // 识别URP验证码
       .then(() => {
-        return Promise.resolve(ocr(agent, params.studentId));
+        return Promise.resolve(ocr(agent, params.studentId))
       })
       // 登录URP
       .then(verCodeIdentified => {
@@ -232,18 +232,18 @@ exports.login = function (params) {
             mm: params.jwcPassWord,
             v_yzm: verCodeIdentified
           })
-          .redirects();
+          .redirects()
       })
       // 登录成功,访问教务资源 TODO:判断是否访问成功
       .then(() => {
         if (params.method.toLowerCase() === 'post') {
-          return Promise.resolve(agent);
+          return Promise.resolve(agent)
         } else {
-          return agent.get(params.url).charset('gbk');
+          return agent.get(params.url).charset('gbk')
         }
       })
-    );
+    )
   } else {
-    return Promise.reject('参数错误');
+    return Promise.reject(new Error('参数错误'))
   }
-};
+}

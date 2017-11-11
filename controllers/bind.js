@@ -1,11 +1,9 @@
-var crypto = require('crypto');
-var config = require('../config');
-var HPUVpnLogin = require('../vendor/HPUVpnLogin');
-var HPUUrpLogin = require('../vendor/HPUUrpLogin');
-var logger = require('../common/logger');
-var util = require('../common/util');
+var HPUVpnLogin = require('../vendor/HPUVpnLogin')
+var HPUUrpLogin = require('../vendor/HPUUrpLogin')
+var logger = require('../common/logger')
+var util = require('../common/util')
 
-var User = require('../models/user');
+var User = require('../models/user')
 
 /**
  * 帐号绑定
@@ -16,29 +14,29 @@ var User = require('../models/user');
  * @return {RES} statusCode 201/400 绑定成功/失败
  */
 exports.bind = function (req, res, next) {
-  var studentId = req.body.studentId;
-  var vpnPassWord = req.body.vpnPassWord;
-  var jwcPassWord = req.body.jwcPassWord;
-  var openId = req.jwtPayload.openId;
+  var studentId = req.body.studentId
+  var vpnPassWord = req.body.vpnPassWord
+  var jwcPassWord = req.body.jwcPassWord
+  var openId = req.jwtPayload.openId
 
   // 认证状态
   var authState = {
     vpn: false,
     jwc: false
-  };
+  }
   // 身份证号
-  var idNumber = '';
+  var idNumber = ''
   // 姓名
-  var name = '';
+  var name = ''
   // 正则
-  var idNumberRe = /\d{17}[\d|x]|\d{15}/i;
-  var nameRe = /<td\swidth="275">\s+([\u4e00-\u9fa5]{2,5})/i;
+  var idNumberRe = /\d{17}[\d|x]|\d{15}/i
+  var nameRe = /<td\swidth="275">\s+([\u4e00-\u9fa5]{2,5})/i
 
   if (!studentId && !vpnPassWord && !jwcPassWord && !openId) {
     res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误'
-    });
+    })
   }
 
   // 认证VPN
@@ -53,14 +51,14 @@ exports.bind = function (req, res, next) {
     .then(serviceContent => {
       return new Promise((resolve, reject) => {
         if (/欢迎您/.test(serviceContent.text)) {
-          resolve('访问成功');
+          resolve('访问成功')
         } else {
-          reject('访问失败');
+          reject(new Error('访问失败'))
         }
-      });
+      })
     })
     .then(() => {
-      authState.vpn = true;
+      authState.vpn = true
     })
     // 认证URP
     .then(() => {
@@ -72,40 +70,40 @@ exports.bind = function (req, res, next) {
           method: 'get',
           url: 'https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/xjInfoAction.do?oper=xjxx'
         })
-      );
+      )
     })
     .then(urpContent => {
       // 匹配<学籍信息>关键字
       return new Promise((resolve, reject) => {
-        var data = urpContent.text;
+        var data = urpContent.text
 
         if (/学籍信息/.test(data)) {
           // 匹配身份证号
-          var idNumberRes = data.match(idNumberRe);
+          var idNumberRes = data.match(idNumberRe)
           if (idNumberRes !== null) {
-            idNumber = idNumberRes[0];
+            idNumber = idNumberRes[0]
           }
           // 匹配姓名
-          var nameRes = data.match(nameRe);
+          var nameRes = data.match(nameRe)
           if (nameRes !== null) {
-            name = nameRes[1];
+            name = nameRes[1]
           }
 
-          resolve('访问成功');
+          resolve('访问成功')
         } else {
-          reject('访问失败');
+          reject(new Error('访问失败'))
         }
-      });
+      })
     })
     .then(() => {
-      authState.jwc = true;
+      authState.jwc = true
     })
     // 更新绑定信息
     .then(() => {
       // 加密存储
-      var _vpnPassWord = util.aesEncrypt(vpnPassWord);
-      var _jwcPassWord = util.aesEncrypt(jwcPassWord);
-      var _idNumber = util.aesEncrypt(idNumber);
+      var _vpnPassWord = util.aesEncrypt(vpnPassWord)
+      var _jwcPassWord = util.aesEncrypt(jwcPassWord)
+      var _idNumber = util.aesEncrypt(idNumber)
 
       return Promise.resolve(
         User.update({
@@ -120,22 +118,22 @@ exports.bind = function (req, res, next) {
             bind: true
           }
         })
-      );
+      )
     })
     .then(() => {
       res.status(201).json({
         statusCode: 201,
         errMsg: '绑定成功',
         data: authState
-      });
+      })
     })
     .catch(err => {
-      logger.error('认证失败' + err);
+      logger.error('认证失败' + err)
 
       res.status(400).json({
         statusCode: 400,
         errMsg: '认证失败',
         data: authState
-      });
-    });
-};
+      })
+    })
+}

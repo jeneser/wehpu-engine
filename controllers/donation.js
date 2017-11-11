@@ -1,6 +1,6 @@
-var request = require('superagent');
-var logger = require('../common/logger');
-var config = require('../config');
+var request = require('superagent')
+var logger = require('../common/logger')
+var config = require('../config')
 
 /**
  * 捐赠致谢
@@ -20,27 +20,27 @@ exports.donation = function (req, res, next) {
             return [{
               donor: ele.split('|')[0].replace(/@|\s/g, ''),
               money: ele.split('|')[1].replace(/rmb|\s/g, '')
-            }];
-          });
-          resolve(list);
+            }]
+          })
+          resolve(list)
         } else {
-          reject('获取捐赠列表失败');
+          reject(new Error('获取捐赠列表失败'))
         }
-      });
+      })
     })
     .then(list => {
       res.status(200).json({
         statusCode: 200,
         errMsg: '获取捐赠列表成功',
         data: list
-      });
+      })
     })
     .catch(err => {
-      logger.error(err);
+      logger.error(err)
 
       res.status(500).json({
         statusCode: 500,
         errMsg: '反馈失败'
-      });
-    });
+      })
+    })
 }

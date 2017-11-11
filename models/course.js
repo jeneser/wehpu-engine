@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
 
 var courseSchema = new Schema({
   openId: String,
@@ -10,8 +10,8 @@ var courseSchema = new Schema({
     type: Date,
     default: Date.now()
   }
-});
+})
 
-var Course = mongoose.model('Course', courseSchema);
+var Course = mongoose.model('Course', courseSchema)
 
-module.exports = Course;
+module.exports = Course

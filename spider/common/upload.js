@@ -1,12 +1,10 @@
-var path = require('path');
-var fs = require('fs');
-var uuidv4 = require('uuid/v4');
-var logger = require('../common/logger');
-var config = require('../config');
-var util = require('./util');
+var path = require('path')
+var logger = require('../common/logger')
+var config = require('../config')
+var util = require('./util')
 
-var OSS = require('ali-oss').Wrapper;
-var client = new OSS(config.aliOSS);
+var OSS = require('ali-oss').Wrapper
+var client = new OSS(config.aliOSS)
 
 /**
  * 文件上传
@@ -18,45 +16,45 @@ var client = new OSS(config.aliOSS);
  * @return {String} url 文件存放路径
  */
 exports.upload = function (params) {
-  var params = params || {};
+  params = params || {}
   // 默认尺寸限制
-  params._limitUploadSize = config.limitUploadSize;
+  params._limitUploadSize = config.limitUploadSize
 
   if (params.limit) {
-    params._limitUploadSize = params.limit;
+    params._limitUploadSize = params.limit
   }
 
   return new Promise((resolve, reject) => {
     // 过滤非法文件
     if (!util.filterMime(params.mime)) {
       // 移除临时文件
-      util.unlink(params.file);
+      util.unlink(params.file)
 
-      reject('非法文件类型 ' + params.mime);
+      reject(new Error('非法文件类型 ' + params.mime))
     } else if (+params.filesize > +params._limitUploadSize) {
       // 移除临时文件
-      util.unlink(params.file);
+      util.unlink(params.file)
 
       // 限制上传尺寸
-      reject('文件尺寸过大');
+      reject(new Error('文件尺寸过大'))
     } else {
       // 上传文件
       client
         .put(params.folder + '/' + path.basename(params.file), params.file)
         .then(val => {
           // 移除临时文件
-          util.unlink(params.file);
+          util.unlink(params.file)
 
-          resolve(val.res.requestUrls);
+          resolve(val.res.requestUrls)
         })
         .catch(err => {
           // 移除临时文件
-          util.unlink(params.file);
+          util.unlink(params.file)
 
-          logger.error('上传OSS失败', err);
+          logger.error('上传OSS失败', err)
 
-          reject('上传OSS失败');
+          reject(new Error('上传OSS失败'))
         })
     }
-  });
+  })
 }

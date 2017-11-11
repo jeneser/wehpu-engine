@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
 
 var lectureSchema = new Schema({
   // 标题
@@ -15,8 +15,8 @@ var lectureSchema = new Schema({
     type: String,
     default: Date.now()
   }
-});
+})
 
-var Lecture = mongoose.model('Lecture', lectureSchema);
+var Lecture = mongoose.model('Lecture', lectureSchema)
 
-module.exports = Lecture;
+module.exports = Lecture
