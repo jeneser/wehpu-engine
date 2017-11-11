@@ -17,7 +17,7 @@ var config = {
     accessKeyId: '',
     accessKeySecret: '',
     bucket: ''
-  },
+  }
 }
 
-module.exports = config;
+module.exports = config

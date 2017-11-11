@@ -1,23 +1,23 @@
-var cheerio = require('cheerio');
-var async = require('async');
-var config = require('./config');
-var logger = require('../../common/logger');
-var request = require('superagent');
-require('superagent-charset')(request);
+var cheerio = require('cheerio')
+var async = require('async')
+var config = require('./config')
+var logger = require('../../common/logger')
+var request = require('superagent')
+require('superagent-charset')(request)
 
-var News = require('../../models/news');
-var Scheduler = require('../../models/scheduler');
+var News = require('../../models/news')
+var Scheduler = require('../../models/scheduler')
 
 /**
  * 获取urls
  * @param {String} flag 上次匹配位置
  * @return {Promise} urls 结果数组
  */
-function getUrls(flag) {
+function getUrls (flag) {
   // Promise
   return new Promise((resolve, reject) => {
     // URLs
-    var urls = [];
+    var urls = []
 
     // 发起请求
     request
@@ -28,40 +28,40 @@ function getUrls(flag) {
         response: config.timeout
       })
       .then(res => {
-        $ = cheerio.load(res.text, config.cheerioConfig);
+        var $ = cheerio.load(res.text, config.cheerioConfig)
         // 匹配URLs
         $('a').filter((i, elem) => {
-          return $(elem).attr('href').search('http://news.hpu.edu.cn/news/contents/') !== -1;
+          return $(elem).attr('href').search('http://news.hpu.edu.cn/news/contents/') !== -1
         }).each((i, elem) => {
           // 并入数组
-          urls.push($(elem).attr('href'));
-        });
+          urls.push($(elem).attr('href'))
+        })
         // 返回结果数组
         if (urls.length > 0) {
           // 上次匹配位置
-          var index = urls.findIndex(i => i === flag);
+          var index = urls.findIndex(i => i === flag)
           // 截取最新内容
-          var _urls = index === -1 ? urls.slice(0) : urls.slice(0, index);
+          var _urls = index === -1 ? urls.slice(0) : urls.slice(0, index)
 
           if (_urls.length === 0) {
-            reject('无最新新闻，已结束本次任务');
+            reject(new Error('无最新新闻，已结束本次任务'))
           } else {
-            resolve(_urls);
+            resolve(_urls)
           }
         } else {
-          reject('匹配URLs出错');
+          reject(new Error('匹配URLs出错'))
         }
       })
       .catch(err => {
         if (err.timeout) {
-          reject('网络超时，已结束本次任务');
+          reject(new Error('网络超时，已结束本次任务'))
         } else {
-          logger.error('匹配新闻网URLs出错', err);
+          logger.error('匹配新闻网URLs出错', err)
 
-          reject('匹配新闻网URLs出错');
+          reject(new Error('匹配新闻网URLs出错'))
         }
-      });
-  });
+      })
+  })
 }
 
 /**
@@ -69,11 +69,11 @@ function getUrls(flag) {
  * @param {Array} urls URLs
  * @return {Promise} 结果，本次匹配位置
  */
-function getContent(urls) {
+function getContent (urls) {
   // Promise
   return new Promise((resolve, reject) => {
     // News
-    var news = [];
+    var news = []
 
     async.eachLimit(urls, config.limit, (url, cb) => {
       // 发起请求
@@ -81,8 +81,8 @@ function getContent(urls) {
         .get(url)
         .charset('gbk')
         .then(res => {
-          $ = cheerio.load(res.text, config.cheerioConfig);
-          var mainTd = $('td', '#body').attr('width', '700');
+          var $ = cheerio.load(res.text, config.cheerioConfig)
+          var mainTd = $('td', '#body').attr('width', '700')
 
           var _news = {
             // 标题
@@ -97,23 +97,23 @@ function getContent(urls) {
           }
 
           // 并入结果数组
-          news.push(_news);
+          news.push(_news)
 
           // 执行回调
-          cb(null);
+          cb(null)
         })
         .catch(err => {
-          logger.error('匹配新闻内容出错', err);
-        });
+          logger.error('匹配新闻内容出错', err)
+        })
     }, err => {
       if (news.length > 0) {
         // 返回抓取结果以及第一条URL
-        resolve([news, urls[0]]);
+        resolve([news, urls[0]])
       } else {
-        reject('匹配新闻内容出错');
+        reject(new Error('匹配新闻内容出错' + err))
       }
-    });
-  });
+    })
+  })
 }
 
 exports.getNews = function () {
@@ -124,20 +124,20 @@ exports.getNews = function () {
     })
     // 获取urls
     .then(doc => {
-      var flag = doc ? doc.flag : '';
+      var flag = doc ? doc.flag : ''
 
-      return Promise.resolve(getUrls(flag));
+      return Promise.resolve(getUrls(flag))
     })
     // 获取内容
     .then(urls => {
-      return Promise.resolve(getContent(urls));
+      return Promise.resolve(getContent(urls))
     })
     // 解构新闻内容以及本次匹配进度
     .then(([newsRes, url]) => {
       // 批量插入新闻结果
-      News.collection.insert(newsRes);
+      News.collection.insert(newsRes)
 
-      return url;
+      return url
     })
     // 更新匹配进度
     .then(url => {
@@ -149,6 +149,6 @@ exports.getNews = function () {
         }
       }, {
         upsert: true
-      }));
+      }))
     })
 }

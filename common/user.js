@@ -1,8 +1,6 @@
-var crypto = require('crypto');
-var config = require('../config');
-var util = require('./util');
+var util = require('./util')
 
-var User = require('../models/user');
+var User = require('../models/user')
 
 /**
  * 获取用户基本密码信息
@@ -24,12 +22,12 @@ exports.getUserInfo = function (openId) {
             vpnPassWord: util.aesDecrypt(person.vpnPassWord),
             jwcPassWord: util.aesDecrypt(person.jwcPassWord),
             idNumber: util.aesDecrypt(person.idNumber)
-          };
+          }
 
-          resolve(userInfo);
+          resolve(userInfo)
         } else {
-          reject('获取用户信息失败');
+          reject(new Error('获取用户信息失败'))
         }
-      });
-  });
+      })
+  })
 }

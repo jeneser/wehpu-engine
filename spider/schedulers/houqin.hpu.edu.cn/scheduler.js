@@ -1,7 +1,7 @@
-var schedule = require('node-schedule');
-var logger = require('../../common/logger');
-var config = require('./config');
-var main = require('./main');
+var schedule = require('node-schedule')
+var logger = require('../../common/logger')
+var config = require('./config')
+var main = require('./main')
 
 /**
  * 后勤定时任务
@@ -10,17 +10,17 @@ var main = require('./main');
  */
 exports.run = function () {
   schedule.scheduleJob(config.rule, () => {
-    var t = new Date();
-    logger.info('Started', '后勤定时任务');
+    var t = new Date()
+    logger.info('Started', '后勤定时任务')
 
     // 执行主任务
     Promise
       .resolve(main.getNews())
       .then(() => {
-        logger.info('Completed', '后勤定时任务', (new Date() - t) + 'ms');
+        logger.info('Completed', '后勤定时任务', (new Date() - t) + 'ms')
       })
       .catch(err => {
-        logger.error('Completed', '后勤定时任务失败', err, (new Date() - t) + 'ms');
-      });
-  });
+        logger.error('Completed', '后勤定时任务失败', err, (new Date() - t) + 'ms')
+      })
+  })
 }

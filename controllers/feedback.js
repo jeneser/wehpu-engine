@@ -1,8 +1,6 @@
-var path = require('path');
-var fs = require('fs');
-var request = require('superagent');
-var logger = require('../common/logger');
-var config = require('../config');
+var request = require('superagent')
+var logger = require('../common/logger')
+var config = require('../config')
 
 /**
  * 反馈
@@ -18,22 +16,22 @@ var config = require('../config');
  * @return {String} url 反馈链接
  */
 exports.feedback = function (req, res, next) {
-  var data = req.body;
+  var data = req.body
 
   // 验证
   if (!data.content || data.content.length < 5 || !data.labels || !data.nick || !data.model || !data.platform || !data.wxVersion || !data.wehpuVersion) {
     res.status(400).json({
       statusCode: 400,
       errMsg: '格式错误'
-    });
+    })
   }
 
   // 遍历图片
-  var _images = '';
+  var _images = ''
   if (data.images) {
     data.images.split(',').forEach(url => {
-      _images += '![img](' + url + '?x-oss-process=style/feedback' + ')\r\n';
-    });
+      _images += '![img](' + url + '?x-oss-process=style/feedback' + ')\r\n'
+    })
   }
 
   // 拼接内容
@@ -59,13 +57,13 @@ exports.feedback = function (req, res, next) {
     })
     .send(_content)
     .then(result => {
-      var _result = JSON.parse(result.text);
+      var _result = JSON.parse(result.text)
 
       return new Promise((resolve, reject) => {
         if (_result.id && _result.url) {
-          resolve(_result);
+          resolve(_result)
         } else {
-          reject('反馈失败');
+          reject(new Error('反馈失败'))
         }
       })
     })
@@ -76,14 +74,14 @@ exports.feedback = function (req, res, next) {
         data: {
           url: result.url
         }
-      });
+      })
     })
     .catch(err => {
-      logger.error(err);
+      logger.error(err)
 
       res.status(500).json({
         statusCode: 500,
         errMsg: '反馈失败'
-      });
-    });
+      })
+    })
 }

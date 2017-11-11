@@ -1,5 +1,5 @@
-var cheerio = require('cheerio');
-var util = require('../common/util');
+var cheerio = require('cheerio')
+var util = require('../common/util')
 
 // 请求资源配置
 var agentConfig = {
@@ -18,8 +18,7 @@ var cheerioConfig = {
   lowerCaseTags: true,
   lowerCaseAttributeNames: true,
   ignoreWhitespace: true
-};
-
+}
 
 /**
  * 处理空教室
@@ -28,15 +27,15 @@ var cheerioConfig = {
  */
 exports.classroom = function (params) {
   return new Promise((resolve, reject) => {
-    var agent = params.agent;
+    var agent = params.agent
     // 结果
-    var classrooms = [];
+    var classrooms = []
 
     // 获取当前学期
     Promise
       .resolve(util.getCalendar())
       .then(calendar => {
-        params.currentTerm = calendar.currentTerm;
+        params.currentTerm = calendar.currentTerm
       })
       .then(() => {
         // 必要的试探性请求
@@ -77,15 +76,15 @@ exports.classroom = function (params) {
         // console.log(urpContent);
 
         // 处理空教室信息
-        $ = cheerio.load(urpContent.text, cheerioConfig);
+        var $ = cheerio.load(urpContent.text, cheerioConfig)
 
         // step1 获取包含空教室的<table>块
-        var step1 = $('#user').html();
+        var userElem = $('#user').html()
 
         // 获取教室列表
-        _$ = cheerio.load(step1, cheerioConfig);
-        var step2 = _$('.odd').each((i, elem) => {
-          var q = $(elem).children('td');
+        var _$ = cheerio.load(userElem, cheerioConfig)
+        _$('.odd').each((i, elem) => {
+          var q = $(elem).children('td')
 
           classrooms.push({
             // 教学楼
@@ -94,18 +93,17 @@ exports.classroom = function (params) {
             room: q.eq(3).text().replace('(多)', ''),
             // 教室容量
             volume: q.eq(5).text()
-          });
+          })
         })
 
         if (classrooms.length > 0) {
-          resolve(classrooms);
+          resolve(classrooms)
         } else {
-          reject('处理空教室出错')
+          reject(new Error('处理空教室出错'))
         }
       })
       .catch(err => {
-        console.log(err);
-        reject('处理空教室出错')
+        reject(err)
       })
   })
 }

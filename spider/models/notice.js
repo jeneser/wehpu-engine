@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
 
 var noticeSchema = new Schema({
   // 标题
@@ -19,8 +19,8 @@ var noticeSchema = new Schema({
     type: Date,
     default: Date.now()
   }
-});
+})
 
-var Notice = mongoose.model('Notice', noticeSchema);
+var Notice = mongoose.model('Notice', noticeSchema)
 
-module.exports = Notice;
+module.exports = Notice

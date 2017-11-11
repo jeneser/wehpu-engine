@@ -2,8 +2,7 @@
  * 模拟登录河南理工大学图书馆系统
  */
 
-var request = require('superagent');
-var logger = require('../common/logger');
+var request = require('superagent')
 
 var config = {
   // 登录地址
@@ -28,10 +27,10 @@ var config = {
  * @param {Object} params
  */
 exports.login = function (params) {
-  var params = params || {};
+  params = params || {}
 
   // 保存Cookie
-  var agent = request.agent();
+  var agent = request.agent()
 
   if (params.studentId && params.passWord) {
     // 登录图书馆
@@ -47,12 +46,12 @@ exports.login = function (params) {
       .then(res => {
         // 如果没有url参数则返回agent
         if (params.url === '' || params.url === undefined) {
-          return Promise.resolve(agent);
+          return Promise.resolve(agent)
         } else {
-          return agent.get(params.url);
+          return agent.get(params.url)
         }
-      });
+      })
   } else {
-    Promise.resolve('登录失败');
+    Promise.resolve('登录失败')
   }
 }

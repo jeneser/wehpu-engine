@@ -9,6 +9,9 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "standard": {
+    "globals": ["$"]
+  },
   "dependencies": {
     "ali-oss": "^4.11.0",
     "bluebird": "^3.5.0",
@@ -30,5 +33,8 @@
     "superagent": "^3.6.0",
     "superagent-charset": "^1.2.0",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "standard": "^10.0.3"
   }
 }

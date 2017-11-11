@@ -48,6 +48,6 @@ const mimeWhiteList = [
     mime: 'image/png',
     ext: 'png'
   }
-];
+]
 
-module.exports = mimeWhiteList;
+module.exports = mimeWhiteList

@@ -1,5 +1,5 @@
-var config = require('../config');
-var log4js = require('log4js');
+var config = require('../config')
+var log4js = require('log4js')
 
 log4js.configure({
   appenders: {
@@ -12,7 +12,7 @@ log4js.configure({
       // 备份
       backups: config.log4js.backups,
       // 压缩
-      compress: true,
+      compress: true
     }
   },
   categories: {
@@ -21,8 +21,8 @@ log4js.configure({
       level: 'INFO'
     }
   }
-});
+})
 
-var logger = log4js.getLogger('cheese');
+var logger = log4js.getLogger('cheese')
 
-module.exports = logger;
+module.exports = logger

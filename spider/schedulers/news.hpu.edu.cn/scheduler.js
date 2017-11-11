@@ -1,7 +1,7 @@
-var schedule = require('node-schedule');
-var logger = require('../../common/logger');
-var config = require('./config');
-var main = require('./main');
+var schedule = require('node-schedule')
+var logger = require('../../common/logger')
+var config = require('./config')
+var main = require('./main')
 
 /**
  * 新闻网定时任务
@@ -9,19 +9,18 @@ var main = require('./main');
  * 星期一 至 星期五 凌晨2:00
  */
 exports.run = function () {
-
   schedule.scheduleJob(config.rule, () => {
-    var t = new Date();
-    logger.info('Started', '新闻网定时任务');
+    var t = new Date()
+    logger.info('Started', '新闻网定时任务')
 
     // 执行主任务
     Promise
       .resolve(main.getNews())
       .then(() => {
-        logger.info('Completed', '新闻网定时任务', (new Date() - t) + 'ms');
+        logger.info('Completed', '新闻网定时任务', (new Date() - t) + 'ms')
       })
       .catch(err => {
-        logger.error('Completed', '新闻网定时任务失败', err, (new Date() - t) + 'ms');
-      });
-  });
+        logger.error('Completed', '新闻网定时任务失败', err, (new Date() - t) + 'ms')
+      })
+  })
 }

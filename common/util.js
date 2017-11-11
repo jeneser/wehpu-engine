@@ -1,17 +1,17 @@
-var fs = require('fs');
-var crypto = require('crypto');
-var config = require('../config');
-var mimeWhiteList = require('./whiteList');
+var fs = require('fs')
+var crypto = require('crypto')
+var config = require('../config')
+var mimeWhiteList = require('./whiteList')
 
 /**
  * AES加密
  * @param {String} data 加密数据
  */
 exports.aesEncrypt = function (data) {
-  const cipher = crypto.createCipher(config.commonAlgorithm, config.commonSecret);
-  var crypted = cipher.update(data, 'utf8', 'hex');
-  crypted += cipher.final('hex');
-  return crypted;
+  const cipher = crypto.createCipher(config.commonAlgorithm, config.commonSecret)
+  var crypted = cipher.update(data, 'utf8', 'hex')
+  crypted += cipher.final('hex')
+  return crypted
 }
 
 /**
@@ -19,10 +19,10 @@ exports.aesEncrypt = function (data) {
  * @param {String} encrypted 解密数据
  */
 exports.aesDecrypt = function (encrypted) {
-  const decipher = crypto.createDecipher(config.commonAlgorithm, config.commonSecret);
-  var decrypted = decipher.update(encrypted, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+  const decipher = crypto.createDecipher(config.commonAlgorithm, config.commonSecret)
+  var decrypted = decipher.update(encrypted, 'hex', 'utf8')
+  decrypted += decipher.final('utf8')
+  return decrypted
 }
 
 /**
@@ -32,10 +32,10 @@ exports.aesDecrypt = function (encrypted) {
  */
 exports.mimeToExt = function (type) {
   var mime = mimeWhiteList.find(elem => {
-    return elem.mime.toLowerCase() === type.toLowerCase();
-  });
+    return elem.mime.toLowerCase() === type.toLowerCase()
+  })
 
-  return mime ? mime.ext : '';
+  return mime ? mime.ext : ''
 }
 
 /**
@@ -45,10 +45,10 @@ exports.mimeToExt = function (type) {
  */
 exports.filterMime = function (mime) {
   var _mime = mimeWhiteList.find(elem => {
-    return elem.mime.toLowerCase() === mime.toLowerCase();
-  });
+    return elem.mime.toLowerCase() === mime.toLowerCase()
+  })
 
-  return _mime ? true : false;
+  return !!_mime
 }
 
 /**
@@ -57,7 +57,7 @@ exports.filterMime = function (mime) {
  */
 exports.unlink = function (path) {
   if (fs.existsSync(path)) {
-    fs.unlink(path);
+    fs.unlink(path)
   }
 }
 
@@ -67,18 +67,18 @@ exports.unlink = function (path) {
  */
 exports.getCalendar = function () {
   return new Promise((resolve, reject) => {
-    var calendar = {};
+    var calendar = {}
 
     // 当前学期
-    calendar.currentTerm = config.calendar.currentTerm;
+    calendar.currentTerm = config.calendar.currentTerm
     // 开学日期
-    calendar.termStart = config.calendar.termStart;
+    calendar.termStart = config.calendar.termStart
     // 总周数
-    calendar.totalWeekly = config.calendar.totalWeekly;
+    calendar.totalWeekly = config.calendar.totalWeekly
 
     // 计算当前周次 1: 第一周
-    calendar.currentWeekly = (Date.now() > Date.parse(calendar.termStart)) ? calendar.totalWeekly : Math.ceil((Date.now() - Date.parse(calendar.termStart)) / 604800000);
+    calendar.currentWeekly = (Date.now() > Date.parse(calendar.termStart)) ? calendar.totalWeekly : Math.ceil((Date.now() - Date.parse(calendar.termStart)) / 604800000)
 
-    resolve(calendar);
-  });
+    resolve(calendar)
+  })
 }

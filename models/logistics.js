@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
 
 var logisticsSchema = new Schema({
   // 标题
@@ -14,8 +14,8 @@ var logisticsSchema = new Schema({
     default: Date.now()
   },
   images: Array
-});
+})
 
-var Logistics = mongoose.model('Logistics', logisticsSchema);
+var Logistics = mongoose.model('Logistics', logisticsSchema)
 
-module.exports = Logistics;
+module.exports = Logistics

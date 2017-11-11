@@ -36,6 +36,6 @@ var config = {
     accessKeySecret: '',
     bucket: ''
   }
-};
+}
 
-module.exports = config;
+module.exports = config
