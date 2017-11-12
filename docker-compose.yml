@@ -9,6 +9,8 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
       - ./vendor:/usr/src/app/vendor
+      - ./logs:/usr/src/app/logs
+      - ./tmpdir:/usr/src/app/tmpdir
     restart: always
     links:
       - mongodb-master
@@ -23,6 +25,8 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
       - ./vendor:/usr/src/app/vendor
+      - ./logs:/usr/src/app/logs
+      - ./tmpdir:/usr/src/app/tmpdir
     restart: always
     links:
       - mongodb-master
@@ -37,6 +41,8 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
       - ./vendor:/usr/src/app/vendor
+      - ./logs:/usr/src/app/logs
+      - ./tmpdir:/usr/src/app/tmpdir
     restart: always
     links:
       - mongodb-master
@@ -51,7 +57,8 @@ services:
     volumes:
       - ./spider:/usr/src/app/spider
       - /usr/src/app/spider/node_modules
-      - /usr/src/app/spider/logs
+      - ./spider/logs:/usr/src/app/spider/logs
+      - ./spider/tmpdir:/usr/src/app/spider/tmpdir
     restart: always
     links:
       - mongodb-master
