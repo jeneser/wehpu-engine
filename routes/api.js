@@ -20,6 +20,7 @@ var newsController = require('../controllers/news')
 var feedbackController = require('../controllers/feedback')
 var donationController = require('../controllers/donation')
 
+var notifyController = require('../controllers/notify')
 var uploadController = require('../controllers/upload')
 
 /**
@@ -143,6 +144,14 @@ router.post('/feedback', auth.ensureAuthorized, feedbackController.feedback)
  * @return {RES} statusCode 200/500 捐赠列表获取成功/失败
  */
 router.get('/donation', donationController.donation)
+
+/**
+ * 发送模板消息
+ * @param {String} [openId] 包含在token中的openId
+ * @param {Json} params 请求数据
+ * @return {RES} statusCode 200/400/500 发送消息成功/格式错误/失败
+ */
+router.post('/notify', auth.ensureAuthorized, notifyController.notify)
 
 /**
  * 文件上传

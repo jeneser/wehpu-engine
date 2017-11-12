@@ -22,6 +22,12 @@ var config = {
   // code换取session_key接口
   jscode2session: 'https://api.weixin.qq.com/sns/jscode2session',
 
+  // 微信模板消息id
+  templateId: {
+    // 校园卡找回通知
+    AT1107: '0aCdZ9Yf7D5u7-uZeOsWzf7Zv2UX9ySkqBfIxhKeTns'
+  },
+
   // json web token 需妥善保管!
   jwtSecret: '',
 
