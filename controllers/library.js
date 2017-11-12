@@ -2,18 +2,26 @@ var request = require('superagent')
 var logger = require('../common/logger')
 var HPULibLogin = require('../vendor/HPULibLogin')
 var handleLibrary = require('../common/library')
+var handleUser = require('../common/user')
 
 /**
  * 图书借阅信息
  */
 exports.borrowing = function (req, res, next) {
-  // 登录图书馆获取借阅信息
+  var openId = req.jwtPayload.openId
+
+  // 查询用户，获取教务资源登录密码
   Promise
-    .resolve(HPULibLogin.login({
-      studentId: '311509040120',
-      passWord: '311509040120',
-      url: 'http://218.196.244.90:8080/Borrowing.aspx'
-    }))
+    .resolve(handleUser.getUserInfo(openId))
+    .then(userInfo => {
+      // 登录图书馆获取借阅信息
+      return Promise
+        .resolve(HPULibLogin.login({
+          studentId: userInfo.studentId,
+          passWord: userInfo.libPassWord,
+          url: 'http://218.196.244.90:8080/Borrowing.aspx'
+        }))
+    })
     .then(libRes => {
       return Promise.resolve(handleLibrary.borrowing(libRes.text))
     })

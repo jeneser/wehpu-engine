@@ -52,6 +52,14 @@ router.post('/bind', auth.ensureAuthorized, bindController.bind)
 router.get('/user', auth.ensureAuthorized, userController.user)
 
 /**
+ * 更新用户信息
+ * @method PUT
+ * @param {String} [openId] 包含在token中的openId
+ * @return {RES} statusCode 201/400/500 更新用户成功/格式错误/失败
+ */
+router.put('/user', auth.ensureAuthorized, userController.update)
+
+/**
  * 获取课表
  * @method GET
  * @param {String} [openId] 包含在token中的openId
