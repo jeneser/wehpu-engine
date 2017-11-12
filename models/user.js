@@ -28,6 +28,11 @@ var userSchema = new Schema({
     type: String,
     default: ''
   },
+  // 寝室号
+  dormitory: {
+    type: String,
+    default: ''
+  },
   // 身份证号 加密
   idNumber: {
     type: String,
@@ -40,6 +45,11 @@ var userSchema = new Schema({
   },
   // 教务处密码 加密
   jwcPassWord: {
+    type: String,
+    default: ''
+  },
+  // 图书馆密码 加密
+  libPassWord: {
     type: String,
     default: ''
   }

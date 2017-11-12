@@ -21,7 +21,8 @@ exports.getUserInfo = function (openId) {
             studentId: person.studentId,
             vpnPassWord: util.aesDecrypt(person.vpnPassWord),
             jwcPassWord: util.aesDecrypt(person.jwcPassWord),
-            idNumber: util.aesDecrypt(person.idNumber)
+            idNumber: util.aesDecrypt(person.idNumber),
+            libPassWord: util.aesDecrypt(person.libPassWord)
           }
 
           resolve(userInfo)
