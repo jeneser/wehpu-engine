@@ -12,6 +12,7 @@ var courseController = require('../controllers/course')
 var scoreController = require('../controllers/score')
 var physicalController = require('../controllers/physical')
 var libraryController = require('../controllers/library')
+var rspController = require('../controllers/rsp')
 
 var calendarController = require('../controllers/calendar')
 
@@ -117,6 +118,20 @@ router.get('/library/books', libraryController.books)
  * @return {RES} statusCode
  */
 router.get('/library/books/:id', libraryController.books)
+
+/**
+ * 后勤报修/完善信息
+ * @method get
+ * @return {RES} statusCode
+ */
+router.post('/rsp/user', auth.ensureAuthorized, rspController.user)
+
+/**
+ * 后勤报修
+ * @method get
+ * @return {RES} statusCode
+ */
+router.post('/rsp/repair', auth.ensureAuthorized, rspController.repair)
 
 /**
  * 新闻聚合
