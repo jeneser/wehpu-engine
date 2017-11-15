@@ -5,14 +5,6 @@ var util = require('../common/util')
 
 var User = require('../models/user')
 
-/**
- * 帐号绑定
- * @param {Number} studentId 学号/一卡通号
- * @param {Number} vpnPassWord vpn密码
- * @param {Number} jwcPassWord 教务处密码
- * @param {String} [openId] 包含在token中的openId
- * @return {RES} statusCode 201/400 绑定成功/失败
- */
 exports.bind = function (req, res, next) {
   var studentId = req.body.studentId
   var vpnPassWord = req.body.vpnPassWord
@@ -33,7 +25,7 @@ exports.bind = function (req, res, next) {
   var nameRe = /<td\swidth="275">\s+([\u4e00-\u9fa5]{2,5})/i
 
   if (!studentId && !vpnPassWord && !jwcPassWord && !openId) {
-    res.status(400).json({
+    return res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误'
     })
@@ -49,13 +41,11 @@ exports.bind = function (req, res, next) {
     )
     // 测试是否访问成功
     .then(serviceContent => {
-      return new Promise((resolve, reject) => {
-        if (/欢迎您/.test(serviceContent.text)) {
-          resolve('访问成功')
-        } else {
-          reject(new Error('访问失败'))
-        }
-      })
+      if (/欢迎您/.test(serviceContent.text)) {
+        return Promise.resolve('访问成功')
+      } else {
+        return Promise.reject(new Error('访问失败'))
+      }
     })
     .then(() => {
       authState.vpn = true
@@ -74,26 +64,24 @@ exports.bind = function (req, res, next) {
     })
     .then(urpContent => {
       // 匹配<学籍信息>关键字
-      return new Promise((resolve, reject) => {
-        var data = urpContent.text
+      var data = urpContent.text
 
-        if (/学籍信息/.test(data)) {
-          // 匹配身份证号
-          var idNumberRes = data.match(idNumberRe)
-          if (idNumberRes !== null) {
-            idNumber = idNumberRes[0]
-          }
-          // 匹配姓名
-          var nameRes = data.match(nameRe)
-          if (nameRes !== null) {
-            name = nameRes[1]
-          }
-
-          resolve('访问成功')
-        } else {
-          reject(new Error('访问失败'))
+      if (/学籍信息/.test(data)) {
+        // 匹配身份证号
+        var idNumberRes = data.match(idNumberRe)
+        if (idNumberRes !== null) {
+          idNumber = idNumberRes[0]
         }
-      })
+        // 匹配姓名
+        var nameRes = data.match(nameRe)
+        if (nameRes !== null) {
+          name = nameRes[1]
+        }
+
+        return Promise.resolve('访问成功')
+      } else {
+        return Promise.reject(new Error('访问失败'))
+      }
     })
     .then(() => {
       authState.jwc = true
@@ -121,7 +109,7 @@ exports.bind = function (req, res, next) {
       )
     })
     .then(() => {
-      res.status(201).json({
+      return res.status(201).json({
         statusCode: 201,
         errMsg: '绑定成功',
         data: authState
@@ -130,7 +118,7 @@ exports.bind = function (req, res, next) {
     .catch(err => {
       logger.error('认证失败' + err)
 
-      res.status(400).json({
+      return res.status(400).json({
         statusCode: 400,
         errMsg: '认证失败',
         data: authState

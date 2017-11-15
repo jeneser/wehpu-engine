@@ -38,10 +38,10 @@ router.post('/login', loginController.login)
  * 绑定&重新绑定
  * @method POST
  * @param {Number} studentId 学号/一卡通号
- * @param {Number} vpnPassWord vpn密码
- * @param {Number} jwcPassWord 教务处密码
- * @param {String} [openId] 包含在token中的openId
- * @return {RES} statusCode 201/400/403 绑定成功/失败/无权访问
+ * @param {String} vpnPassWord vpn密码
+ * @param {String} jwcPassWord 教务处密码
+ * @param {String} openId 包含在token中的openId
+ * @return {*} statusCode 201/400/403
  */
 router.post('/bind', auth.ensureAuthorized, bindController.bind)
 
