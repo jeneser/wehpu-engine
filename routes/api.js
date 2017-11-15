@@ -30,7 +30,7 @@ var uploadController = require('../controllers/upload')
  * @param {*} code 用户登录凭证
  * @param {*} encryptedData 包括敏感数据在内的完整用户信息的加密数据
  * @param {*} iv 加密算法的初始向量
- * @return {RES} statusCode 200/201/400/500 返回/创建新用户成功/格式错误/登录出错
+ * @return {*} statusCode 200/400/500
  */
 router.post('/login', loginController.login)
 

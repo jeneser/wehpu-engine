@@ -31,6 +31,9 @@ var config = {
   // json web token 需妥善保管!
   jwtSecret: '',
 
+  // 会话有效期
+  jwtExpiresIn: '15d',
+
   // 通用加密算法 需妥善保管!
   commonAlgorithm: '',
 
