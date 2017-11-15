@@ -31,7 +31,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 // router
-app.use('/api/v1', api)
+app.use('/api', api)
 app.use('/', web)
 
 // error handler
