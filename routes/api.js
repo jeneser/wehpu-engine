@@ -48,8 +48,8 @@ router.post('/bind', auth.ensureAuthorized, bindController.bind)
 /**
  * 用户信息
  * @method GET
- * @param {String} [openId] 包含在token中的openId
- * @return {RES} statusCode 200/400/403/500 查询用户成功/格式错误/无权访问/失败
+ * @param {String} openId 包含在token中的openId
+ * @return {*} statusCode 200/400/403/404/500
  */
 router.get('/user', auth.ensureAuthorized, userController.user)
 
