@@ -64,8 +64,8 @@ router.put('/user', auth.ensureAuthorized, userController.update)
 /**
  * 获取课表
  * @method GET
- * @param {String} [openId] 包含在token中的openId
- * @return {RES} statusCode 201/400/403/404
+ * @param {String} openId 包含在token中的openId
+ * @return {*} statusCode 200/400/403/404/500
  */
 router.get('/course', auth.ensureAuthorized, courseController.course)
 

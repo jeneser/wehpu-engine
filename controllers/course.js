@@ -2,28 +2,37 @@ var logger = require('../common/logger')
 var HPUUrpLogin = require('../vendor/HPUUrpLogin')
 var handleCourse = require('../common/course')
 var handleUser = require('../common/user')
+var config = require('../config')
 
 var Course = require('../models/course')
 
-/**
- * 获取课表
- * @method GET
- * @param {String} [openId] 包含在token中的openId
- */
 exports.course = function (req, res, next) {
   var openId = req.jwtPayload.openId
 
   // 验证
   if (!openId) {
-    res.status(400).json({
+    return res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误'
     })
   }
 
-  // 查询用户，获取教务资源登录密码
-  Promise
-    .resolve(handleUser.getUserInfo(openId))
+  // 从数据库获取课表数据
+  return Promise
+    .resolve(Course.findOne({
+      openId: openId
+    }))
+    .then(doc => {
+      if (doc && doc.courses && doc.term === config.currentTerm) {
+        // reject 跳过教务处查询操作直接返回结果
+        return Promise.reject(doc)
+      }
+    })
+    // Start: 教务处查询操作
+    .then(() => {
+      // 查询用户，获取教务资源登录密码
+      return Promise.resolve(handleUser.getUserInfo(openId))
+    })
     // 登录教务处并获取课表资源
     .then(userInfo => {
       return Promise.resolve(
@@ -38,13 +47,11 @@ exports.course = function (req, res, next) {
     })
     // 测试是否访问成功
     .then(urpContent => {
-      return new Promise((resolve, reject) => {
-        if (/选课结果/.test(urpContent.text)) {
-          resolve(urpContent.text)
-        } else {
-          reject(new Error('访问失败'))
-        }
-      })
+      if (/选课结果/.test(urpContent.text)) {
+        return Promise.resolve(urpContent.text)
+      } else {
+        return Promise.reject(new Error('访问失败'))
+      }
     })
     // 处理课表
     .then(data => {
@@ -59,27 +66,41 @@ exports.course = function (req, res, next) {
         }, {
           $set: {
             openId: openId,
-            courses: processedCourses
+            courses: processedCourses,
+            term: config.currentTerm
           }
         }, {
           upsert: true
         })
       )
     })
+    // End: 转发直接从数据库中获取的数据
+    .catch(data => {
+      if (data && data.courses) {
+        return Promise.resolve(data)
+      }
+    })
     // 返回
-    .then(doc => {
-      res.status(201).json({
-        statusCode: 201,
-        errMsg: '获取课表成功',
-        data: doc.courses
-      })
+    .then(data => {
+      if (data && data.courses) {
+        return res.status(200).json({
+          statusCode: 200,
+          errMsg: '获取课表成功',
+          data: data.courses
+        })
+      } else {
+        return res.status(404).json({
+          statusCode: 404,
+          errMsg: '无结果'
+        })
+      }
     })
     // 处理错误
     .catch(err => {
       logger.error('获取课表失败' + err)
 
-      res.status(404).json({
-        statusCode: 404,
+      return res.status(500).json({
+        statusCode: 500,
         errMsg: '获取课表失败'
       })
     })

@@ -2,10 +2,13 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
 var courseSchema = new Schema({
+  // openId
   openId: String,
-  courses: {
-    type: Object
-  },
+  // 课程数据
+  courses: Object,
+  // 学期
+  term: String,
+  // 创建日期
   timestamp: {
     type: Date,
     default: Date.now()
