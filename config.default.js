@@ -32,7 +32,7 @@ var config = {
   jwtSecret: '',
 
   // 会话有效期
-  jwtExpiresIn: '15d',
+  jwtExpiresIn: '',
 
   // 通用加密算法 需妥善保管!
   commonAlgorithm: '',

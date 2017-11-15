@@ -47,11 +47,13 @@ exports.course = function (req, res, next) {
     })
     // 测试是否访问成功
     .then(urpContent => {
-      if (/选课结果/.test(urpContent.text)) {
-        return Promise.resolve(urpContent.text)
-      } else {
-        return Promise.reject(new Error('访问失败'))
-      }
+      return new Promise((resolve, reject) => {
+        if (/选课结果/.test(urpContent.text)) {
+          resolve(urpContent.text)
+        } else {
+          reject(new Error('访问URP失败'))
+        }
+      })
     })
     // 处理课表
     .then(data => {

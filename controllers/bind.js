@@ -41,11 +41,13 @@ exports.bind = function (req, res, next) {
     )
     // 测试是否访问成功
     .then(serviceContent => {
-      if (/欢迎您/.test(serviceContent.text)) {
-        return Promise.resolve('访问成功')
-      } else {
-        return Promise.reject(new Error('访问失败'))
-      }
+      return new Promise((resolve, reject) => {
+        if (/欢迎您/.test(serviceContent.text)) {
+          resolve('访问成功')
+        } else {
+          reject(new Error('访问URP失败'))
+        }
+      })
     })
     .then(() => {
       authState.vpn = true
@@ -64,24 +66,26 @@ exports.bind = function (req, res, next) {
     })
     .then(urpContent => {
       // 匹配<学籍信息>关键字
-      var data = urpContent.text
+      return new Promise((resolve, reject) => {
+        var data = urpContent.text
 
-      if (/学籍信息/.test(data)) {
-        // 匹配身份证号
-        var idNumberRes = data.match(idNumberRe)
-        if (idNumberRes !== null) {
-          idNumber = idNumberRes[0]
-        }
-        // 匹配姓名
-        var nameRes = data.match(nameRe)
-        if (nameRes !== null) {
-          name = nameRes[1]
-        }
+        if (/学籍信息/.test(data)) {
+          // 匹配身份证号
+          var idNumberRes = data.match(idNumberRe)
+          if (idNumberRes !== null) {
+            idNumber = idNumberRes[0]
+          }
+          // 匹配姓名
+          var nameRes = data.match(nameRe)
+          if (nameRes !== null) {
+            name = nameRes[1]
+          }
 
-        return Promise.resolve('访问成功')
-      } else {
-        return Promise.reject(new Error('访问失败'))
-      }
+          resolve('访问成功')
+        } else {
+          reject(new Error('访问URP失败'))
+        }
+      })
     })
     .then(() => {
       authState.jwc = true
