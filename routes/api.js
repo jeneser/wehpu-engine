@@ -80,7 +80,11 @@ router.get('/score', auth.ensureAuthorized, scoreController.score)
 /**
  * 查询空教室
  * @method POST
- * @param {String} [openId] 包含在token中的openId
+ * @param {String} openId 包含在token中的openId
+ * @param {String} building 教学楼
+ * @param {String} weekly 周次
+ * @param {String} section 节次
+ * @param {String} week 周
  */
 router.post('/classroom', auth.ensureAuthorized, classroomController.classroom)
 

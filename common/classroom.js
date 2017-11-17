@@ -46,7 +46,7 @@ exports.classroom = function (params) {
           })
           .type('form')
           .send({
-            'zxxnxq': '2017-2018-1-1',
+            'zxxnxq': params.currentTerm,
             'zxXaq': '01'
           })
       })
@@ -83,18 +83,22 @@ exports.classroom = function (params) {
 
         // 获取教室列表
         var _$ = cheerio.load(userElem, cheerioConfig)
-        _$('.odd').each((i, elem) => {
-          var q = $(elem).children('td')
-
-          classrooms.push({
-            // 教学楼
-            building: q.eq(2).text(),
-            // 教室
-            room: q.eq(3).text().replace('(多)', ''),
-            // 教室容量
-            volume: q.eq(5).text()
+        _$('tr')
+          .filter((i, elem) => {
+            return $(elem).attr('class') !== ''
           })
-        })
+          .each((i, elem) => {
+            var q = $(elem).children('td')
+
+            classrooms.push({
+              // 教学楼
+              building: q.eq(2).text().trim(),
+              // 教室
+              room: q.eq(3).text().replace('(多)', '').trim(),
+              // 教室容量
+              volume: q.eq(5).text().trim()
+            })
+          })
 
         if (classrooms.length > 0) {
           resolve(classrooms)
