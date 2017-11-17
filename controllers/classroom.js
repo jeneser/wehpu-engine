@@ -32,7 +32,7 @@ exports.classroom = function (req, res, next) {
       id: id
     }))
     .then(doc => {
-      if (doc && doc.rooms && doc.term === config.currentTerm) {
+      if (doc && doc.rooms && doc.term === config.calendar.currentTerm) {
         // reject 跳过教务处查询操作直接返回结果
         return Promise.reject(doc)
       }
@@ -70,7 +70,7 @@ exports.classroom = function (req, res, next) {
           $set: {
             id: id,
             rooms: classroomsRes,
-            term: config.currentTerm
+            term: config.calendar.currentTerm
           }
         }, {
           upsert: true

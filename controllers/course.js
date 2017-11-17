@@ -23,7 +23,7 @@ exports.course = function (req, res, next) {
       openId: openId
     }))
     .then(doc => {
-      if (doc && doc.courses && doc.term === config.currentTerm) {
+      if (doc && doc.courses && doc.term === config.calendar.currentTerm) {
         // reject 跳过教务处查询操作直接返回结果
         return Promise.reject(doc)
       }
@@ -69,7 +69,7 @@ exports.course = function (req, res, next) {
           $set: {
             openId: openId,
             courses: processedCourses,
-            term: config.currentTerm
+            term: config.calendar.currentTerm
           }
         }, {
           upsert: true
