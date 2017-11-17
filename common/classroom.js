@@ -85,7 +85,7 @@ exports.classroom = function (params) {
         var _$ = cheerio.load(userElem, cheerioConfig)
         _$('tr')
           .filter((i, elem) => {
-            return $(elem).attr('class') !== ''
+            return $(elem).attr('class') === 'even' || $(elem).attr('class') === 'odd'
           })
           .each((i, elem) => {
             var q = $(elem).children('td')
