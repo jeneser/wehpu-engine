@@ -85,6 +85,7 @@ router.get('/score', auth.ensureAuthorized, scoreController.score)
  * @param {String} weekly 周次
  * @param {String} section 节次
  * @param {String} week 周
+ * @return {RES} statusCode 200/403/404/500
  */
 router.post('/classroom', auth.ensureAuthorized, classroomController.classroom)
 

@@ -73,6 +73,9 @@ exports.classroom = function (req, res, next) {
             term: config.calendar.currentTerm
           }
         }, {
+          // 返回更新后的文档
+          new: true,
+          // 强制更新
           upsert: true
         })
       )
