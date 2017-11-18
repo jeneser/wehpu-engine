@@ -21,6 +21,58 @@ var cheerioConfig = {
 }
 
 /**
+ * @param  {*} val 待处理教室编号
+ */
+function getFlag (val) {
+  if (Number.isNaN(parseInt(val))) {
+    return val.charAt(0)
+  } else {
+    var roomNum = parseInt(val).toString()
+    if (roomNum.length === 3) {
+      return roomNum.charAt(0)
+    } else if (roomNum.length === 4) {
+      return roomNum.charAt(1)
+    } else if (roomNum.length === 0) {
+      return val
+    } else {
+      return val.charAt(0)
+    }
+  }
+}
+
+/**
+ * @param  {Array} arr 待处理数组
+ * @param  {Array} res 结果数组
+ */
+function sortRooms (arr, res) {
+  // 相同元素
+  var same = []
+  // 不同元素
+  var diff = []
+  var length = arr.length
+
+  // 以第一个元素为标志
+  same.push(arr[0])
+
+  // 筛选
+  for (var i = 0; i < length; i++) {
+    if (getFlag(arr[i].room) === getFlag(same[0].room)) {
+      same.push(arr[i])
+    } else {
+      diff.push(arr[i])
+    }
+  }
+
+  // 返回结果
+  res.push(same)
+
+  // 递归
+  if (diff.length) {
+    sortRooms(diff, res)
+  }
+}
+
+/**
  * 处理空教室
  * @param {Object} params
  * @return {Promise} 处理结果
@@ -101,7 +153,9 @@ exports.classroom = function (params) {
           })
 
         if (classrooms.length > 0) {
-          resolve(classrooms)
+          var sorted = []
+          sortRooms(classrooms, sorted)
+          resolve(sorted)
         } else {
           reject(new Error('处理空教室出错'))
         }
