@@ -73,7 +73,7 @@ router.get('/course', auth.ensureAuthorized, courseController.course)
  * 本学期成绩
  * @method get
  * @param {String} [openId] 包含在token中的openId
- * @return {RES} statusCode 200/403/404
+ * @return {*} statusCode 200/403/404
  */
 router.get('/score', auth.ensureAuthorized, scoreController.score)
 
