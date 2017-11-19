@@ -92,13 +92,14 @@ exports.score = function (req, res, next) {
     // 持久化
     .then(data => {
       return Promise.resolve(
-        Score.update({
+        Score.findOneAndUpdate({
           openId: openId
         }, {
           $set: {
             scores: data
           }
         }, {
+          new: true,
           upsert: true
         })
       )
