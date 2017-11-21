@@ -78,6 +78,7 @@ exports.course = function (req, res, next) {
         })
       )
     })
+    .then(doc => doc)
     // End: 转发直接从数据库中获取的数据
     .catch(data => {
       if (data && data.courses) {
