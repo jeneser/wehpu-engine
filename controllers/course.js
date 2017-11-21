@@ -67,7 +67,6 @@ exports.course = function (req, res, next) {
           openId: openId
         }, {
           $set: {
-            openId: openId,
             courses: processedCourses,
             term: config.calendar.currentTerm
           }
@@ -87,6 +86,8 @@ exports.course = function (req, res, next) {
     })
     // 返回
     .then(data => {
+      logger.info(data)
+
       if (data && data.courses) {
         return res.status(200).json({
           statusCode: 200,
