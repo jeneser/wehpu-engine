@@ -61,6 +61,8 @@ exports.course = function (req, res, next) {
     })
     // 解构参数，持久化
     .then(([originCourses, processedCourses]) => {
+      logger.info(processedCourses)
+
       // 持久化经过处理的课表
       return Promise.resolve(
         Course.findOneAndUpdate({
@@ -78,7 +80,6 @@ exports.course = function (req, res, next) {
         })
       )
     })
-    .then(doc => doc)
     // End: 转发直接从数据库中获取的数据
     .catch(data => {
       if (data && data.courses) {
@@ -87,8 +88,6 @@ exports.course = function (req, res, next) {
     })
     // 返回
     .then(data => {
-      logger.info(data)
-
       if (data && data.courses) {
         return res.status(200).json({
           statusCode: 200,
