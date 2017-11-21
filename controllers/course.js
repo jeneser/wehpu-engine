@@ -23,6 +23,8 @@ exports.course = function (req, res, next) {
       openId: openId
     }))
     .then(doc => {
+      logger.info('doc' + doc)
+
       if (doc && doc.courses && doc.term === config.calendar.currentTerm) {
         // reject 跳过教务处查询操作直接返回结果
         return Promise.reject(doc)
@@ -61,7 +63,7 @@ exports.course = function (req, res, next) {
     })
     // 解构参数，持久化
     .then(([originCourses, processedCourses]) => {
-      logger.info(processedCourses)
+      logger.info('processedCourses' + processedCourses)
 
       // 持久化经过处理的课表
       return Promise.resolve(
@@ -82,6 +84,8 @@ exports.course = function (req, res, next) {
     })
     // End: 转发直接从数据库中获取的数据
     .catch(data => {
+      logger.info('catch data' + data)
+
       if (data && data.courses) {
         return Promise.resolve(data)
       }
