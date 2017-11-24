@@ -150,6 +150,16 @@ router.post('/rsp/repair', auth.ensureAuthorized, rspController.repair)
 router.get('/rss/:classify', auth.ensureAuthorized, newsController.news)
 
 /**
+ * 新闻详情
+ * @method get
+ * @param {String} [openId] 包含在token中的openId
+ * @param {String} classify param 新闻分类
+ * @param {String} id param 文章_id
+ * @return {RES} statusCode 200/400/403/404/500 查询成功/格式错误/无权/无结果/失败
+ */
+router.get('/rss/:classify/:id', auth.ensureAuthorized, newsController.newsDetail)
+
+/**
  * 反馈
  * @method post
  * @param {String} [openId] 包含在token中的openId
