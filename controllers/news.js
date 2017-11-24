@@ -101,7 +101,7 @@ exports.newsDetail = function (req, res, next) {
     classify
       .findById(id)
       .then(doc => {
-        if (doc && doc.length) {
+        if (doc && doc.title) {
           var data = {
             title: doc.title,
             time: doc.time,
