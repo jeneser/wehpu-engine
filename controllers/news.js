@@ -103,10 +103,16 @@ exports.newsDetail = function (req, res, next) {
       .then(doc => {
         if (doc && doc.title) {
           var data = {
+            // 通用字段
             title: doc.title,
             time: doc.time,
             tag: doc.tag,
-            content: doc.content
+            content: doc.content,
+            // 附加字段
+            href: doc.href,
+            place: doc.place,
+            speaker: doc.speaker,
+            timestamp: doc.timestamp
           }
 
           return res.status(200).json({
