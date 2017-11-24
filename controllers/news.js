@@ -53,22 +53,15 @@ exports.news = function (req, res, next) {
    */
   function getNews (classify) {
     classify
-      .find({})
+      .find({}, '_id title time tag')
       .skip(parseInt(query.start))
       .limit(parseInt(query.count))
       .then(doc => {
         if (doc && doc.length) {
-          var data = {
-            id: doc._id,
-            title: doc.title,
-            time: doc.time,
-            tag: doc.tag
-          }
-
           return res.status(200).json({
             statusCode: 200,
             errMsg: '获取新闻成功',
-            data: data
+            data: doc
           })
         } else {
           return res.status(404).json({
