@@ -20,7 +20,7 @@ exports.feedback = function (req, res, next) {
 
   // 验证
   if (!data.content || data.content.length < 5 || !data.labels || !data.nick || !data.model || !data.platform || !data.wxVersion || !data.wehpuVersion) {
-    res.status(400).json({
+    return res.status(400).json({
       statusCode: 400,
       errMsg: '格式错误'
     })
@@ -68,18 +68,18 @@ exports.feedback = function (req, res, next) {
       })
     })
     .then(result => {
-      res.status(201).json({
+      return res.status(201).json({
         statusCode: 201,
         errMsg: '反馈成功',
         data: {
-          url: result.url
+          url: result.html_url
         }
       })
     })
     .catch(err => {
       logger.error(err)
 
-      res.status(500).json({
+      return res.status(500).json({
         statusCode: 500,
         errMsg: '反馈失败'
       })
