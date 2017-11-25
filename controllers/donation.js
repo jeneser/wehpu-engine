@@ -17,10 +17,10 @@ exports.donation = function (req, res, next) {
       return new Promise((resolve, reject) => {
         if (content.text) {
           var list = content.text.match(/@.+?rmb/ig).map(ele => {
-            return [{
+            return {
               donor: ele.split('|')[0].replace(/@|\s/g, ''),
               money: ele.split('|')[1].replace(/rmb|\s/g, '')
-            }]
+            }
           })
           resolve(list)
         } else {
