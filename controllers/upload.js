@@ -24,7 +24,7 @@ exports.upload = function (req, res, next) {
 
   form.parse(req, function (err, fields, files) {
     if (err) {
-      res.status(500).json({
+      return res.status(500).json({
         statusCode: 500,
         errMsg: '内部错误'
       })
@@ -45,6 +45,7 @@ exports.upload = function (req, res, next) {
       if (fs.existsSync(path)) {
         fs.unlink(path)
       }
+      return
     }
 
     // 文件后缀转换
@@ -60,7 +61,7 @@ exports.upload = function (req, res, next) {
     fs.renameSync(fileInfo.path, tmpPath, err => {
       logger.error('重命名失败', err)
 
-      res.status(500).json({
+      return res.status(500).json({
         statusCode: 500,
         errMsg: '上传失败'
       })
@@ -76,7 +77,7 @@ exports.upload = function (req, res, next) {
     }))
       .then(url => {
         // 返回文件url
-        res.status(201).json({
+        return res.status(201).json({
           statusCode: 201,
           errMsg: '上传成功',
           data: {
@@ -87,7 +88,7 @@ exports.upload = function (req, res, next) {
       .catch(err => {
         logger.error('文件上传失败', err)
 
-        res.status(500).json({
+        return res.status(500).json({
           statusCode: 500,
           errMsg: '上传失败'
         })
