@@ -60,17 +60,10 @@ exports.login = function (params) {
       .timeout({
         response: config.timeout
       })
-      .redirects()
-      .then(res => {
-        logger.info('res:' + res.text)
-
-        // 如果没有url参数则返回agent
-        if (params.url === '' || params.url === undefined) {
-          return Promise.resolve(agent)
-        } else {
-          return agent.get(params.url)
-        }
+      .then(() => {
+        return agent.get(params.url)
       })
+      .redirects()
   } else {
     Promise.reject(new Error('登录失败'))
   }
