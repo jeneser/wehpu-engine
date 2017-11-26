@@ -46,7 +46,7 @@ exports.login = function (params) {
   var agent = request.agent()
 
   if (params.studentId && params.passWord) {
-    agent
+    return agent
       .post(config.peLoginUrl)
       .set(config.commonHeaders)
       .type('form')
@@ -65,6 +65,6 @@ exports.login = function (params) {
       })
       .redirects()
   } else {
-    Promise.reject(new Error('登录失败'))
+    return Promise.reject(new Error('登录失败'))
   }
 }
