@@ -16,7 +16,7 @@ exports.physical = function (req, res, next) {
         // 学号
         studentId: userInfo.studentId,
         // 身份证后八位
-        passWord: userInfo.idNumber.toString().substr(-8),
+        passWord: userInfo.idNumber.toString().slice(-8),
         url: 'http://218.196.240.158/welcome.aspx'
       }))
     })
