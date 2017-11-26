@@ -54,7 +54,7 @@ exports.login = function (params) {
         // 学号
         txtAccount: params.studentId,
         // 身份证后八位
-        txtPassword: params.idNumber.toString().substr(-8),
+        txtPassword: params.passWord.toString().substr(-8),
       })
       .timeout({
         response: config.timeout

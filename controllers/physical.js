@@ -10,8 +10,6 @@ exports.physical = function (req, res, next) {
   Promise
     .resolve(handleUser.getUserInfo(openId))
     .then(userInfo => {
-      logger.info(userInfo)
-
       return Promise.resolve(HPUPeLogin.login({
         // 学号
         studentId: userInfo.studentId,
