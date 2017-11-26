@@ -10,11 +10,13 @@ exports.physical = function (req, res, next) {
   Promise
     .resolve(handleUser.getUserInfo(openId))
     .then(userInfo => {
+      logger.info(userInfo)
+
       return Promise.resolve(HPUPeLogin.login({
         // 学号
         studentId: userInfo.studentId,
         // 身份证后八位
-        passWord: userInfo.idNumber.substr(-8),
+        passWord: userInfo.idNumber.toString().substr(-8),
         url: 'http://218.196.240.158/welcome.aspx'
       }))
     })
@@ -22,7 +24,7 @@ exports.physical = function (req, res, next) {
       return Promise.resolve(handlePhysical.physical(content.text))
     })
     .then(data => {
-      res.status(200).json({
+      return res.status(200).json({
         statusCode: 200,
         errMsg: '查询成功',
         data: data
@@ -31,8 +33,8 @@ exports.physical = function (req, res, next) {
     .catch(err => {
       logger.error('体测成绩查询失败' + err)
 
-      res.status(404).json({
-        statusCode: 404,
+      return res.status(500).json({
+        statusCode: 500,
         errMsg: '查询失败'
       })
     })
