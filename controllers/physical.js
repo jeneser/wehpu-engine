@@ -19,7 +19,7 @@ exports.physical = function (req, res, next) {
       }))
     })
     .then(content => {
-      logger.info(content.text)
+      logger.info(content)
 
       return Promise.resolve(handlePhysical.physical(content.text))
     })
