@@ -3,6 +3,7 @@
  * MIT Copyright (c) 2017 Jeneser
  * Source: https://github.com/jeneser
  */
+var logger = require('../common/logger')
 
 var request = require('superagent')
 
@@ -54,13 +55,15 @@ exports.login = function (params) {
         // 学号
         txtAccount: params.studentId,
         // 身份证后八位
-        txtPassword: params.passWord.toString().substr(-8),
+        txtPassword: params.passWord.toString().substr(-8)
       })
       .timeout({
         response: config.timeout
       })
       .redirects()
       .then(res => {
+        logger.info('res:' + res)
+
         // 如果没有url参数则返回agent
         if (params.url === '' || params.url === undefined) {
           return Promise.resolve(agent)
