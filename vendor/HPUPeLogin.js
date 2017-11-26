@@ -62,7 +62,7 @@ exports.login = function (params) {
       })
       .redirects()
       .then(res => {
-        logger.info('res:' + res)
+        logger.info('res:' + res.text)
 
         // 如果没有url参数则返回agent
         if (params.url === '' || params.url === undefined) {
