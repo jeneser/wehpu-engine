@@ -101,7 +101,7 @@ router.get('/physical', auth.ensureAuthorized, physicalController.physical)
  * @method get
  * @return {RES} statusCode 200/404 校历获取成功/失败
  */
-router.get('/calendar', calendarController.calendar)
+router.get('/calendar', auth.ensureAuthorized, calendarController.calendar)
 
 /**
  * 图书借阅
@@ -173,7 +173,7 @@ router.post('/feedback', auth.ensureAuthorized, feedbackController.feedback)
  * @method get
  * @return {RES} statusCode 200/500 捐赠列表获取成功/失败
  */
-router.get('/donation', donationController.donation)
+router.get('/donation', auth.ensureAuthorized, donationController.donation)
 
 /**
  * 发送模板消息

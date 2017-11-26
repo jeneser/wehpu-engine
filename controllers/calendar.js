@@ -9,7 +9,8 @@ exports.calendar = function (req, res, next) {
     .resolve(util.getCalendar())
     .then(calendar => {
       if (calendar) {
-        res.status(200).json({
+        return res.status(200).json({
+          statusCode: 200,
           errMsg: '校历获取成功',
           data: {
             // 当前周
