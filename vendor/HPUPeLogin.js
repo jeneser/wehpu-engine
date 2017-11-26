@@ -63,7 +63,6 @@ exports.login = function (params) {
       .then(() => {
         return agent.get(params.url)
       })
-      .redirects()
   } else {
     return Promise.reject(new Error('登录失败'))
   }
