@@ -15,7 +15,7 @@ exports.notify = function (req, res, next) {
   var params = req.body
 
   if (!params.studentId) {
-    res.status(400).json({
+    return res.status(400).json({
       statusCode: 400,
       errMsg: '格式错误'
     })
@@ -32,7 +32,7 @@ exports.notify = function (req, res, next) {
     // 模板内容
     data: params.data,
     // 需要放大的关键词
-    emphasis_keyword: 'keyword1.DATA'
+    emphasis_keyword: 'keyword2.DATA'
   }
 
   // 查询用户是否注册
@@ -67,12 +67,14 @@ exports.notify = function (req, res, next) {
     })
     .then(data => {
       if (data.errcode === 0) {
-        res.status(200).json({
+        return res.status(200).json({
           statusCode: 200,
           errMsg: '发送成功'
         })
       } else {
-        res.status(400).json({
+        logger.info(data)
+
+        return res.status(400).json({
           statusCode: 400,
           errMsg: '发送失败'
         })
@@ -81,7 +83,7 @@ exports.notify = function (req, res, next) {
     .catch(err => {
       logger.error(err)
 
-      res.status(500).json({
+      return res.status(500).json({
         statusCode: 500,
         errMsg: '内部错误'
       })
