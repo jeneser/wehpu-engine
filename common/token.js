@@ -43,6 +43,7 @@ exports.getAccessToken = function () {
             id: 'wxAccessToken'
           }, {
             $set: {
+              id: 'wxAccessToken',
               wxAccessToken: data.access_token
             }
           }, {
@@ -63,7 +64,10 @@ exports.getAccessToken = function () {
         return Promise.reject(data)
       }
     })
+    // 统一处理
     .then(data => {
+      logger.info(data)
+
       if (data.wxAccessToken) {
         return Promise.resolve(data.wxAccessToken)
       } else {
