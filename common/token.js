@@ -37,7 +37,7 @@ exports.getAccessToken = function () {
     })
     // 持久化
     .then(data => {
-      logger.info('token结果' + data)
+      logger.info(data)
 
       if (data.access_token) {
         return Promise.resolve(
