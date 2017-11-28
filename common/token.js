@@ -37,16 +37,14 @@ exports.getAccessToken = function () {
     })
     // 持久化
     .then(data => {
-      logger.info(data)
-
-      if (data.access_token) {
+      if (data.body.access_token) {
         return Promise.resolve(
           Token.findOneAndUpdate({
             id: 'wxAccessToken'
           }, {
             $set: {
               id: 'wxAccessToken',
-              wxAccessToken: data.access_token
+              wxAccessToken: data.body.access_token
             }
           }, {
             // 返回更新后的文档
@@ -68,8 +66,6 @@ exports.getAccessToken = function () {
     })
     // 统一处理
     .then(data => {
-      logger.info(data)
-
       if (data.wxAccessToken) {
         return Promise.resolve(data.wxAccessToken)
       } else {
