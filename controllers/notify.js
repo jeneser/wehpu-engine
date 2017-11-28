@@ -69,7 +69,7 @@ exports.notify = function (req, res, next) {
       // 发送模板消息
       return request
         .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=RHe1SL06Z8A6Dz3tr7rSte0paGSCAOAlXkPjVAAGoAD-uk3SMmCQFBhw-aUbIt7N8-H0c7z-ym-ucwX4pw--29QCt7j1Wzc6kXXQcmRJJYX0HAuvE7a9Yx_zlx980001UHBhABAGTN')
-        .send(msgData)
+        .send(JSON.stringify(msgData))
     })
     .then(data => {
       if (data.body.errcode === 0) {
