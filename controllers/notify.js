@@ -1,6 +1,7 @@
 var request = require('superagent')
 var logger = require('../common/logger')
 var config = require('../config')
+var token = require('../common/token')
 
 var User = require('../models/user')
 
@@ -49,26 +50,14 @@ exports.notify = function (req, res, next) {
         return Promise.reject(new Error('用户不存在'))
       }
     })
-    // .then(() => {
-    //   // 获取access_token
-    //   return request
-    //     .get('https://api.weixin.qq.com/cgi-bin/token')
-    //     .query({
-    //       grant_type: 'client_credential',
-    //       appid: config.appId,
-    //       secret: config.appSecret
-    //     })
-    // })
-    // .then(data => {
-    //   // 发送模板消息
-    //   return request
-    //     .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + data.access_token)
-    //     .send(msgData)
-    // })
-    .then(data => {
+    // 获取access_token
+    .then(() => {
+      return token.getAccessToken()
+    })
+    .then(accessToken => {
       // 发送模板消息
       return request
-        .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=RHe1SL06Z8A6Dz3tr7rSte0paGSCAOAlXkPjVAAGoAD-uk3SMmCQFBhw-aUbIt7N8-H0c7z-ym-ucwX4pw--29QCt7j1Wzc6kXXQcmRJJYX0HAuvE7a9Yx_zlx980001UHBhABAGTN')
+        .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + accessToken)
         .send(JSON.stringify(msgData))
     })
     .then(data => {
