@@ -54,6 +54,9 @@ exports.news = function (req, res, next) {
   function getNews (classify) {
     classify
       .find({}, '_id title time tag timestamp')
+      .sort({
+        time: 'desc'
+      })
       .skip(parseInt(query.start))
       .limit(parseInt(query.count))
       .then(doc => {
