@@ -15,7 +15,7 @@ var noticeSchema = new Schema({
     default: ''
   },
   // 抓取时间
-  timestamp: {
+  create_at: {
     type: Date,
     default: Date.now()
   }

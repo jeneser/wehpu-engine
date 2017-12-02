@@ -13,7 +13,11 @@ var newsSchema = new Schema({
     type: String,
     default: Date.now()
   },
-  images: Array
+  // 抓取时间
+  create_at: {
+    type: Date,
+    default: Date.now()
+  }
 })
 
 var News = mongoose.model('News', newsSchema)

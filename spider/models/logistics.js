@@ -13,7 +13,11 @@ var logisticsSchema = new Schema({
     type: String,
     default: Date.now()
   },
-  images: Array
+  // 抓取时间
+  create_at: {
+    type: Date,
+    default: Date.now()
+  }
 })
 
 var Logistics = mongoose.model('Logistics', logisticsSchema)

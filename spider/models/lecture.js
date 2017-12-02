@@ -14,6 +14,11 @@ var lectureSchema = new Schema({
   time: {
     type: String,
     default: Date.now()
+  },
+  // 抓取时间
+  create_at: {
+    type: Date,
+    default: Date.now()
   }
 })
 
