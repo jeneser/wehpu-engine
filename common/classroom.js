@@ -55,7 +55,7 @@ function sortRooms (arr, res) {
   same.push(arr[0])
 
   // 筛选
-  for (var i = 0; i < length; i++) {
+  for (var i = 1; i < length; i++) {
     if (getFlag(arr[i].room) === getFlag(same[0].room)) {
       same.push(arr[i])
     } else {
@@ -77,18 +77,18 @@ function sortRooms (arr, res) {
  * @param {Array} arr 原始数组
  * @param {String} flag 匹配标志
  */
-function unique (arr, flag) {
-  var hash = {}
-  var temp = []
-  for (let i = 0; i < arr.length; i++) {
-    var key = flag ? arr[i][flag] : arr[i]
-    if (!hash[key]) {
-      hash[key] = true
-      temp.push(arr[i])
-    }
-  }
-  return temp
-}
+// function unique (arr, flag) {
+//   var hash = {}
+//   var temp = []
+//   for (let i = 0; i < arr.length; i++) {
+//     var key = flag ? arr[i][flag] : arr[i]
+//     if (!hash[key]) {
+//       hash[key] = true
+//       temp.push(arr[i])
+//     }
+//   }
+//   return temp
+// }
 
 /**
  * 处理空教室
@@ -173,7 +173,7 @@ exports.classroom = function (params) {
         if (classrooms.length > 0) {
           var sorted = []
           sortRooms(classrooms, sorted)
-          resolve(unique(sorted, 'room'))
+          resolve(sorted)
         } else {
           reject(new Error('处理空教室出错'))
         }
