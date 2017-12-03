@@ -73,6 +73,24 @@ function sortRooms (arr, res) {
 }
 
 /**
+ * 数组去重
+ * @param {Array} arr 原始数组
+ * @param {String} flag 匹配标志
+ */
+function unique (arr, flag) {
+  var hash = {}
+  var temp = []
+  for (let i = 0; i < arr.length; i++) {
+    var key = flag ? arr[i][flag] : arr[i]
+    if (!hash[key]) {
+      hash[key] = true
+      temp.push(arr[i])
+    }
+  }
+  return temp
+}
+
+/**
  * 处理空教室
  * @param {Object} params
  * @return {Promise} 处理结果
@@ -155,7 +173,7 @@ exports.classroom = function (params) {
         if (classrooms.length > 0) {
           var sorted = []
           sortRooms(classrooms, sorted)
-          resolve(sorted)
+          resolve(unique(sorted, 'room'))
         } else {
           reject(new Error('处理空教室出错'))
         }
