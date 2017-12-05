@@ -115,14 +115,14 @@ router.get('/library/borrowing', auth.ensureAuthorized, libraryController.borrow
  * @method get
  * @return {RES} statusCode
  */
-router.get('/library/books', libraryController.books)
+router.get('/library/books', auth.ensureAuthorized, libraryController.books)
 
 /**
  * 图书检索
  * @method get
  * @return {RES} statusCode
  */
-router.get('/library/books/:id', libraryController.books)
+router.get('/library/books/:id', auth.ensureAuthorized, libraryController.books)
 
 /**
  * 后勤报修/完善信息
