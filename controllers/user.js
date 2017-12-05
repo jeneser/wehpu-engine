@@ -61,7 +61,7 @@ exports.update = function (req, res, next) {
   var value = req.body.value
 
   if (!openId || !key || !value) {
-    res.status(400).json({
+    return res.status(400).json({
       statusCode: 400,
       errMsg: '请求格式错误'
     })
@@ -84,17 +84,17 @@ exports.update = function (req, res, next) {
       })
     )
     .then(doc => {
-      if (doc && doc[key] === value) {
+      if (doc) {
         var userInfo = {
           studentId: doc.studentId
         }
-        res.status(201).json({
+        return res.status(201).json({
           statusCode: 201,
           errMsg: '更新成功',
           data: userInfo
         })
       } else {
-        res.status(400).json({
+        return res.status(400).json({
           statusCode: 400,
           errMsg: '更新失败'
         })
@@ -103,7 +103,7 @@ exports.update = function (req, res, next) {
     .catch(err => {
       logger.error('更新用户信息失败' + err)
 
-      res.status(500).json({
+      return res.status(500).json({
         statusCode: 500,
         errMsg: '更新失败'
       })
