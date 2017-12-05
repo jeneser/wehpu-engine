@@ -57,9 +57,6 @@ exports.notify = function (req, res, next) {
     })
     .then(accessToken => {
       logger.info(JSON.stringify(msgData))
-      logger.info(JSON.stringify({
-        touser: touser
-      }))
       // 发送模板消息
       return request
         .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + accessToken)
