@@ -7,7 +7,10 @@ var User = require('../models/user')
  * 查询用户信息
  */
 exports.user = function (req, res, next) {
+  var id = req.params.id || ''
   var openId = req.jwtPayload.openId
+
+  var p
 
   if (!openId) {
     return res.status(400).json({
@@ -16,12 +19,22 @@ exports.user = function (req, res, next) {
     })
   }
 
-  // 查询用户
-  return Promise.resolve(
+  if (id) {
+    p = Promise.resolve(
+      User.findOne({
+        studentId: parseInt(id).toString()
+      })
+    )
+  } else {
+    p = Promise.resolve(
       User.findOne({
         openId: openId
       })
     )
+  }
+
+  // 查询用户
+  return p
     .then(person => {
       if (person) {
         var userInfo = {

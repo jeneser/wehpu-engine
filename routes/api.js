@@ -51,7 +51,7 @@ router.post('/bind', auth.ensureAuthorized, bindController.bind)
  * @param {String} openId 包含在token中的openId
  * @return {*} statusCode 200/400/403/404/500
  */
-router.get('/user', auth.ensureAuthorized, userController.user)
+router.get('/user/:id', auth.ensureAuthorized, userController.user)
 
 /**
  * 更新用户信息
