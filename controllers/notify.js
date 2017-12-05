@@ -55,6 +55,7 @@ exports.notify = function (req, res, next) {
       return token.getAccessToken()
     })
     .then(accessToken => {
+      logger.info(JSON.stringify(msgData))
       // 发送模板消息
       return request
         .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + accessToken)
