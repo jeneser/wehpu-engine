@@ -68,7 +68,7 @@ exports.notify = function (req, res, next) {
           errMsg: '发送成功'
         })
       } else {
-        logger.info(data)
+        // logger.info(data)
         return res.status(400).json({
           statusCode: 400,
           errMsg: '发送失败'
