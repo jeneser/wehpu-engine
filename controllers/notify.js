@@ -44,9 +44,10 @@ exports.notify = function (req, res, next) {
     )
     .then(person => {
       if (person) {
-        logger.info(person)
         // 确定接受者id
-        msgData.touser = person.openId
+        var openId = person.openId
+        msgData.touser = openId
+        logger.info(msgData)
       } else {
         return Promise.reject(new Error('用户不存在'))
       }
