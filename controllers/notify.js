@@ -22,10 +22,10 @@ exports.notify = function (req, res, next) {
     })
   }
 
-  // 接收者openId
-  var touser = ''
   // 模板数据
   var msgData = {
+    // 接收者openId
+    touser: '',
     // 模板id
     template_id: config.templateId[params.templateId],
     // 表单id
@@ -44,8 +44,9 @@ exports.notify = function (req, res, next) {
     )
     .then(person => {
       if (person) {
+        logger.info(person)
         // 确定接受者id
-        touser = person.openId
+        msgData.touser = person.openId
       } else {
         return Promise.reject(new Error('用户不存在'))
       }
@@ -62,9 +63,6 @@ exports.notify = function (req, res, next) {
       // 发送模板消息
       return request
         .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + accessToken)
-        .send(JSON.stringify({
-          touser: touser
-        }))
         .send(JSON.stringify(msgData))
     })
     .then(data => {
