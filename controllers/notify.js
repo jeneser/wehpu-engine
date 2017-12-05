@@ -47,7 +47,6 @@ exports.notify = function (req, res, next) {
         // 确定接受者id
         var openId = person.openId
         msgData.touser = openId
-        logger.info(msgData)
       } else {
         return Promise.reject(new Error('用户不存在'))
       }
@@ -57,7 +56,6 @@ exports.notify = function (req, res, next) {
       return token.getAccessToken()
     })
     .then(accessToken => {
-      logger.info(JSON.stringify(msgData))
       // 发送模板消息
       return request
         .post('https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + accessToken)
@@ -70,8 +68,6 @@ exports.notify = function (req, res, next) {
           errMsg: '发送成功'
         })
       } else {
-        logger.info(data)
-
         return res.status(400).json({
           statusCode: 400,
           errMsg: '发送失败'
