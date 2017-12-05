@@ -36,18 +36,18 @@ exports.borrowing = function (data) {
         book.renew = cleanField(td, 0) === '可续借'
         // 书名
         book.name = $('a', $(elem)).text().trim()
-        // 馆藏号
-        book.number = cleanField(td, 1)
         // 馆藏地
-        book.place = cleanField(td, 2)
+        book.place = cleanField(td, 1)
+        // 馆藏号
+        book.number = cleanField(td, 0)
         // 续借次数
-        book.times = cleanField(td, 3)
+        book.times = cleanField(td, 2)
         // 借书时间
-        book.start = cleanField(td, 4)
+        book.start = cleanField(td, 3)
         // 应还日期
-        book.end = cleanField(td, 5)
+        book.end = cleanField(td, 4)
         // 超期情况
-        book.start = cleanField(td, 6)
+        book.remain = cleanField(td, 5)
 
         books.push(book)
       })
