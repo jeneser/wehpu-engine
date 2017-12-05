@@ -67,7 +67,7 @@ exports.repair = function (req, res, next) {
   var openId = req.jwtPayload.openId
   var params = req.body
 
-  if (!params.projectSerial || !params.projectName || !params.mobile || !params.buserName || !params.bContent || !params.bAddress || !params.areaSerial || !params.areaName) {
+  if (!params.projectSerial || !params.projectName || !params.mobile || !params.bUserName || !params.bContent || !params.bAddress || !params.areaSerial || !params.areaName) {
     res.status(400).json({
       statusCode: 400,
       errMsg: '格式错误'
@@ -102,7 +102,7 @@ exports.repair = function (req, res, next) {
           // 图片列表 ,分割
           imglist: params.imgList,
           // 姓名
-          BuserName: params.buserName,
+          BuserName: params.bUserName,
           // 固定值
           Bsource: '1',
           // 报修内容
