@@ -38,7 +38,7 @@ exports.notify = function (req, res, next) {
 
   // 查询用户是否注册
   Promise.resolve(
-      User.find({
+      User.findOne({
         studentId: params.studentId
       })
     )
