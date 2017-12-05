@@ -4,13 +4,10 @@ var util = require('../common/util')
 var User = require('../models/user')
 
 /**
- * 查询用户信息
+ * 用户信息
  */
 exports.user = function (req, res, next) {
-  var id = req.params.id || ''
   var openId = req.jwtPayload.openId
-
-  var p
 
   if (!openId) {
     return res.status(400).json({
@@ -19,22 +16,12 @@ exports.user = function (req, res, next) {
     })
   }
 
-  if (id) {
-    p = Promise.resolve(
-      User.findOne({
-        studentId: parseInt(id).toString()
-      })
-    )
-  } else {
-    p = Promise.resolve(
-      User.findOne({
-        openId: openId
-      })
-    )
-  }
-
   // 查询用户
-  return p
+  return Promise.resolve(
+    User.findOne({
+      openId: openId
+    })
+  )
     .then(person => {
       if (person) {
         var userInfo = {
@@ -42,6 +29,53 @@ exports.user = function (req, res, next) {
           studentId: person.studentId,
           name: person.name,
           bind: person.bind
+        }
+        return res.status(200).json({
+          statusCode: 200,
+          errMsg: '查询成功',
+          data: userInfo
+        })
+      } else {
+        return res.status(404).json({
+          statusCode: 404,
+          errMsg: '用户不存在'
+        })
+      }
+    })
+    .catch(err => {
+      logger.error('获取用户信息失败' + err)
+
+      return res.status(500).json({
+        statusCode: 500,
+        errMsg: '查询失败'
+      })
+    })
+}
+
+/**
+ * 查询用户信息
+ */
+exports.query = function (req, res, next) {
+  var id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      statusCode: 400,
+      errMsg: '请求格式错误'
+    })
+  }
+
+  // 查询用户
+  return Promise.resolve(
+    User.findOne({
+      studentId: parseInt(id).toString()
+    })
+  )
+    .then(person => {
+      if (person) {
+        var userInfo = {
+          studentId: person.studentId,
+          name: person.name
         }
         return res.status(200).json({
           statusCode: 200,
