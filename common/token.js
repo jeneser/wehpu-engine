@@ -45,7 +45,8 @@ exports.getAccessToken = function () {
             $set: {
               id: 'wxAccessToken',
               wxAccessToken: data.body.access_token,
-              expiresIn: parseInt(data.body.expires_in) * 1000
+              expiresIn: parseInt(data.body.expires_in) * 1000,
+              timestamp: Date.now()
             }
           }, {
             // 返回更新后的文档
