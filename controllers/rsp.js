@@ -83,21 +83,19 @@ exports.upload = function (req, res, next) {
       })
     }
 
-    var image = fields.image
     var fileInfo = files.file
 
     // 验证并过滤非白名单文件
-    if (!image || util.filterMime(fileInfo.type) === false || +fileInfo.size > +maxFieldsSize) {
-      res.status(400).json({
-        statusCode: 400,
-        errMsg: '格式错误'
-      })
-
+    if (util.filterMime(fileInfo.type) === false || +fileInfo.size > +maxFieldsSize) {
       // 移除临时文件
       if (fs.existsSync(fileInfo.path)) {
         fs.unlink(fileInfo.path)
       }
-      return
+
+      return res.status(400).json({
+        statusCode: 400,
+        errMsg: '格式错误'
+      })
     }
 
     // 上传文件
