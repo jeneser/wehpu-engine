@@ -24,7 +24,7 @@ var config = {
   },
 
   // 网络超时
-  timeout: 3000
+  timeout: 5000
 }
 
 /**
