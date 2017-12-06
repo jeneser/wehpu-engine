@@ -42,8 +42,8 @@ exports.upload = function (req, res, next) {
       })
 
       // 移除临时文件
-      if (fs.existsSync(path)) {
-        fs.unlink(path)
+      if (fs.existsSync(fileInfo.path)) {
+        fs.unlink(fileInfo.path)
       }
       return
     }
