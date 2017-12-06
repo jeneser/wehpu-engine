@@ -49,9 +49,9 @@ exports.login = function (params) {
         ReturnUrl: 'http%3a%2f%2fhouqin.hpu.edu.cn%2fpc%2f',
         LoginType: ''
       })
-      .timeout({
-        response: config.timeout
-      })
+      // .timeout({
+      //   response: config.timeout
+      // })
       .redirects()
       .then(res => {
         // 如果没有url参数则返回agent
