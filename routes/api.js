@@ -141,13 +141,6 @@ router.get('/library/books/:id', auth.ensureAuthorized, libraryController.books)
 router.post('/rsp/user', auth.ensureAuthorized, rspController.user)
 
 /**
- * 后勤报修/完善信息
- * @method get
- * @return {RES} statusCode
- */
-router.post('/rsp/upload', auth.ensureAuthorized, rspController.upload)
-
-/**
  * 后勤报修
  * @method get
  * @return {RES} statusCode

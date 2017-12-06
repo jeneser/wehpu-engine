@@ -1,8 +1,3 @@
-var path = require('path')
-var fs = require('fs')
-var util = require('../common/util')
-var formidable = require('formidable')
-var request = require('superagent')
 var logger = require('../common/logger')
 var HPURspLogin = require('../vendor/HPURspLogin')
 var handleUser = require('../common/user')
@@ -63,85 +58,6 @@ exports.user = function (req, res, next) {
         errMsg: '内部错误'
       })
     })
-}
-
-exports.upload = function (req, res, next) {
-  // 限制上传尺寸 4M > 4194304 bytes
-  var maxFieldsSize = 4194304
-
-  // 解析form data
-  var form = new formidable.IncomingForm()
-  // 临时文件目录
-  form.uploadDir = path.join(__dirname, '../tmpdir')
-  form.maxFieldsSize = maxFieldsSize
-
-  form.parse(req, function (err, fields, files) {
-    if (err) {
-      return res.status(500).json({
-        statusCode: 500,
-        errMsg: '内部错误'
-      })
-    }
-
-    var fileInfo = files.file
-
-    // 验证并过滤非白名单文件
-    if (util.filterMime(fileInfo.type) === false || +fileInfo.size > +maxFieldsSize) {
-      // 移除临时文件
-      if (fs.existsSync(fileInfo.path)) {
-        fs.unlink(fileInfo.path)
-      }
-
-      return res.status(400).json({
-        statusCode: 400,
-        errMsg: '格式错误'
-      })
-    }
-
-    // 临时文件路径
-    var tmpPath = path.join(__dirname, '../tmpdir/', fileInfo.path + '.' + util.mimeToExt(fileInfo.type))
-    // 重命名文件
-    fs.renameSync(fileInfo.path, tmpPath, err => {
-      logger.error('重命名失败', err)
-
-      return res.status(500).json({
-        statusCode: 500,
-        errMsg: '上传失败'
-      })
-    })
-
-    // 上传文件
-    return request
-      .post('http://houqin.hpu.edu.cn/rsp/my/UploadPhoto')
-      .attach('image', tmpPath)
-      .then(uploadRes => {
-        // 移除临时文件
-        if (fs.existsSync(tmpPath)) {
-          fs.unlink(tmpPath)
-        }
-
-        // 返回文件url
-        return res.status(201).json({
-          statusCode: 201,
-          errMsg: '上传成功',
-          data: {
-            url: uploadRes.body
-          }
-        })
-      })
-      .catch(err => {
-        logger.error('文件上传失败', err)
-        // 移除临时文件
-        if (fs.existsSync(tmpPath)) {
-          fs.unlink(tmpPath)
-        }
-
-        return res.status(500).json({
-          statusCode: 500,
-          errMsg: '上传失败'
-        })
-      })
-  })
 }
 
 /**
