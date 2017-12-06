@@ -75,7 +75,7 @@ exports.repair = function (req, res, next) {
   }
 
   // 查询用户，获取登录密码
-  return Promise
+  Promise
     .resolve(handleUser.getUserInfo(openId))
     .then(userInfo => {
       return Promise
