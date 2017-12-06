@@ -68,21 +68,21 @@ exports.repair = function (req, res, next) {
   var params = req.body
 
   if (!params.projectSerial || !params.projectName || !params.mobile || !params.bUserName || !params.bContent || !params.bAddress || !params.areaSerial || !params.areaName) {
-    res.status(400).json({
+    return res.status(400).json({
       statusCode: 400,
       errMsg: '格式错误'
     })
   }
 
   // 查询用户，获取登录密码
-  Promise
+  return Promise
     .resolve(handleUser.getUserInfo(openId))
     .then(userInfo => {
       return Promise
         .resolve(HPURspLogin.login({
           studentId: userInfo.studentId,
           // 身份证后六位
-          passWord: userInfo.idNumber.substr(-6)
+          passWord: userInfo.idNumber
         }))
     })
     .then(agent => {
@@ -115,8 +115,9 @@ exports.repair = function (req, res, next) {
           Area_Name: params.areaName
         })
     })
-    .then(() => {
-      res.status(201).json({
+    .then(data => {
+      logger.info(data)
+      return res.status(201).json({
         statusCode: 201,
         errMsg: '报修成功'
       })
@@ -124,7 +125,7 @@ exports.repair = function (req, res, next) {
     .catch(err => {
       logger.error(err)
 
-      res.status(500).json({
+      return res.status(500).json({
         statusCode: 500,
         errMsg: '内部错误'
       })

@@ -45,7 +45,7 @@ exports.login = function (params) {
       .type('form')
       .send({
         UserName: params.studentId,
-        Password: params.passWord,
+        Password: params.passWord.toString().substr(-6),
         ReturnUrl: 'http%3a%2f%2fhouqin.hpu.edu.cn%2fpc%2f',
         LoginType: ''
       })
