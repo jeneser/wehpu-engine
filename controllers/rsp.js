@@ -98,11 +98,28 @@ exports.upload = function (req, res, next) {
       })
     }
 
+    // 临时文件路径
+    var tmpPath = path.join(__dirname, '../tmpdir/', fileInfo.path + '.' + util.mimeToExt(fileInfo.type))
+    // 重命名文件
+    fs.renameSync(fileInfo.path, tmpPath, err => {
+      logger.error('重命名失败', err)
+
+      return res.status(500).json({
+        statusCode: 500,
+        errMsg: '上传失败'
+      })
+    })
+
     // 上传文件
     return request
       .post('http://houqin.hpu.edu.cn/rsp/my/UploadPhoto')
-      .attach('image', fileInfo.path)
+      .attach('image', tmpPath)
       .then(uploadRes => {
+        // 移除临时文件
+        if (fs.existsSync(tmpPath)) {
+          fs.unlink(tmpPath)
+        }
+
         // 返回文件url
         return res.status(201).json({
           statusCode: 201,
@@ -114,6 +131,10 @@ exports.upload = function (req, res, next) {
       })
       .catch(err => {
         logger.error('文件上传失败', err)
+        // 移除临时文件
+        if (fs.existsSync(tmpPath)) {
+          fs.unlink(tmpPath)
+        }
 
         return res.status(500).json({
           statusCode: 500,
