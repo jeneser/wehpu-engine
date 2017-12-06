@@ -5,6 +5,7 @@
  */
 
 var request = require('superagent')
+var logger = require('../common/logger')
 
 var config = {
   // 登录地址
@@ -28,7 +29,7 @@ var config = {
 }
 
 /**
- * 模拟登录河南理工大学图书馆系统
+ * 模拟登录河南理工大学报修系统
  * @param {Object} params
  */
 exports.login = function (params) {
@@ -49,13 +50,14 @@ exports.login = function (params) {
         ReturnUrl: 'http%3a%2f%2fhouqin.hpu.edu.cn%2fpc%2f',
         LoginType: ''
       })
-      // .timeout({
-      //   response: config.timeout
-      // })
+      .timeout({
+        response: config.timeout
+      })
       .redirects()
       .then(res => {
+        logger.info(res)
         // 如果没有url参数则返回agent
-        if (params.url === '' || params.url === undefined) {
+        if (!params.url) {
           return Promise.resolve(agent)
         } else {
           return agent.get(params.url)

@@ -2,6 +2,21 @@ var logger = require('../common/logger')
 var HPURspLogin = require('../vendor/HPURspLogin')
 var handleUser = require('../common/user')
 
+var rspHeader = {
+  Host: 'houqin.hpu.edu.cn',
+  Connection: 'keep-alive',
+  Accept: '*/*',
+  Origin: 'http://houqin.hpu.edu.cn',
+  'X-Requested-With': 'XMLHttpRequest',
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.91 Safari/537.36',
+  'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+  DNT: 1,
+  Referer: 'http://houqin.hpu.edu.cn/rsp/my/wantrepair',
+  'Accept-Encoding': 'gzip, deflate',
+  'Accept-Language': 'en-US,en;q=0.8,zh;q=0.6'
+}
+
 /**
  * 完善用户信息
  * @param {String} nickname 昵称
@@ -89,6 +104,7 @@ exports.repair = function (req, res, next) {
       // 报修表单
       return agent
         .post('http://houqin.hpu.edu.cn/rsp/my/wantrepair')
+        .set(rspHeader)
         .send({
           pwdstr: 'CD372815CC48AE6F74872BB4E2DD1E85',
           // 维修项目序列号
