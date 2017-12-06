@@ -5,7 +5,6 @@
  */
 
 var request = require('superagent')
-var logger = require('../common/logger')
 
 var config = {
   // 登录地址
@@ -55,7 +54,6 @@ exports.login = function (params) {
       })
       .redirects()
       .then(res => {
-        logger.info(res)
         // 如果没有url参数则返回agent
         if (!params.url) {
           return Promise.resolve(agent)

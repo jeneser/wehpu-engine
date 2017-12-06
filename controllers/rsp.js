@@ -99,38 +99,37 @@ exports.repair = function (req, res, next) {
         }))
     })
     .then(agent => {
-      return agent.get('http://houqin.hpu.edu.cn/rsp/my/info')
       // 报修表单
-      // return agent
-      //   .post('http://houqin.hpu.edu.cn/rsp/my/wantrepair')
-      //   .set(rspHeader)
-      //   .type('form')
-      //   .send({
-      //     pwdstr: 'CD372815CC48AE6F74872BB4E2DD1E85',
-      //     // 维修项目序列号
-      //     Project_Serial: params.projectSerial,
-      //     // 项目名
-      //     Project_Name: params.projectName,
-      //     // 手机号
-      //     Mobile: params.mobile,
-      //     // 留空
-      //     InfoID: '',
-      //     // 图片列表 ,分割
-      //     imglist: params.imgList,
-      //     // 姓名
-      //     BuserName: params.bUserName,
-      //     // 固定值
-      //     Bsource: '1',
-      //     // 报修内容
-      //     Bcontent: params.bContent,
-      //     // 地址
-      //     Baddress: params.bAddress,
-      //     // 区域序列号
-      //     Area_Serial: params.areaSerial,
-      //     // 校区
-      //     Area_Name: params.areaName
-      //   })
-      //   .redirects()
+      return agent
+        .post('http://houqin.hpu.edu.cn/rsp/my/wantrepair')
+        .set(rspHeader)
+        .type('form')
+        .send({
+          // 区域序列号
+          Area_Serial: params.areaSerial,
+          // 校区
+          Area_Name: params.areaName,
+          // 地址
+          Baddress: params.bAddress,
+          // 项目名
+          Project_Name: params.projectName,
+          // 维修项目序列号
+          Project_Serial: params.projectSerial,
+          // 报修内容
+          Bcontent: params.bContent,
+          // 手机号
+          Mobile: params.mobile,
+          // 姓名
+          BuserName: params.bUserName,
+          // 留空
+          InfoID: '',
+          pwdstr: 'CD372815CC48AE6F74872BB4E2DD1E85',
+          // 图片列表 ,分割
+          imglist: params.imgList,
+          // 固定值
+          Bsource: '1'
+        })
+        .redirects()
     })
     .then(data => {
       logger.info(data)
