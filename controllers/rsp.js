@@ -7,10 +7,8 @@ var rspHeader = {
   Connection: 'keep-alive',
   Accept: '*/*',
   Origin: 'http://houqin.hpu.edu.cn',
-  'X-Requested-With': 'XMLHttpRequest',
   'User-Agent':
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.91 Safari/537.36',
-  'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
   DNT: 1,
   Referer: 'http://houqin.hpu.edu.cn/rsp/my/wantrepair',
   'Accept-Encoding': 'gzip, deflate',
@@ -105,6 +103,7 @@ exports.repair = function (req, res, next) {
       return agent
         .post('http://houqin.hpu.edu.cn/rsp/my/wantrepair')
         .set(rspHeader)
+        .type('form')
         .send({
           pwdstr: 'CD372815CC48AE6F74872BB4E2DD1E85',
           // 维修项目序列号
@@ -130,6 +129,7 @@ exports.repair = function (req, res, next) {
           // 校区
           Area_Name: params.areaName
         })
+        .redirects()
     })
     .then(data => {
       logger.info(data)
