@@ -103,7 +103,12 @@ exports.repair = function (req, res, next) {
       return agent
         .post('http://houqin.hpu.edu.cn/rsp/my/wantrepair')
         .set(rspHeader)
-        .type('form')
+        .set({
+          'X-Requested-With': 'XMLHttpRequest'
+        })
+        .set({
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        })
         .send({
           // 区域序列号
           Area_Serial: params.areaSerial,
