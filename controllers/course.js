@@ -23,8 +23,6 @@ exports.course = function (req, res, next) {
       openId: openId
     }))
     .then(doc => {
-      logger.info('doc' + doc)
-
       if (doc && doc.courses && doc.term === config.calendar.currentTerm) {
         // reject 跳过教务处查询操作直接返回结果
         return Promise.reject(doc)
