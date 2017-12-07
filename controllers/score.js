@@ -39,7 +39,6 @@ exports.score = function (req, res, next) {
         openId: openId
       }))
       .then(doc => {
-        logger.info(doc)
         if (doc && doc.scores.length && doc.term === config.calendar.currentTerm) {
           resolve(doc.scores)
         } else {
@@ -87,9 +86,8 @@ exports.score = function (req, res, next) {
   Promise
     .all([fromDb, fromUrp])
     .then(([db, urp]) => {
-      logger.info(db)
-      logger.info('-------')
-      logger.info(urp)
+      // logger.info(db)
+      // logger.info(urp)
       // 合并结果
       return mergArray(db, urp, 'name')
     })
