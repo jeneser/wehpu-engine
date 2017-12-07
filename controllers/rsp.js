@@ -98,7 +98,7 @@ exports.repair = function (req, res, next) {
           passWord: userInfo.idNumber
         }))
     })
-    .then(agent => {
+    .then(([agent, pwdstr]) => {
       // 报修表单
       return agent
         .post('http://houqin.hpu.edu.cn/rsp/my/wantrepair')
@@ -128,7 +128,7 @@ exports.repair = function (req, res, next) {
           BuserName: params.bUserName,
           // 留空
           InfoID: '',
-          pwdstr: 'CD372815CC48AE6F74872BB4E2DD1E85',
+          pwdstr: pwdstr,
           // 图片列表 ,分割
           imglist: params.imgList,
           // 固定值
