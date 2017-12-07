@@ -25,32 +25,36 @@ exports.score = function (data) {
     var $ = cheerio.load(data, cheerioConfig)
 
     // 处理成绩列表
-    $('.odd', $('#user')).each((i, elem) => {
-      var score = {}
-      var td = $('td', elem)
+    $('tr')
+      .filter((i, elem) => {
+        return $(elem).attr('class') === 'even' || $(elem).attr('class') === 'odd' || $(elem).attr('class') === 'evenfocus' || $(elem).attr('class') === 'oddfocus'
+      })
+      .each((i, elem) => {
+        var score = {}
+        var td = $('td', elem)
 
-      // 课程号
-      score.number = td.eq(0).text().trim()
-      // 课程名
-      score.name = td.eq(2).text().trim()
-      // 最高分
-      score.highest = td.eq(6).text().trim()
-      // 最低分
-      score.lowest = td.eq(7).text().trim()
-      // 平均分
-      score.average = td.eq(8).text().trim()
-      // 分数
-      score.mark = td.eq(9).text().trim()
-      // 排名
-      score.rank = td.eq(10).text().trim()
+        // 课程号
+        score.number = td.eq(0).text().trim()
+        // 课程名
+        score.name = td.eq(2).text().trim()
+        // 最高分
+        score.highest = td.eq(6).text().trim()
+        // 最低分
+        score.lowest = td.eq(7).text().trim()
+        // 平均分
+        score.average = td.eq(8).text().trim()
+        // 分数
+        score.mark = td.eq(9).text().trim()
+        // 排名
+        score.rank = td.eq(10).text().trim()
 
-      scores.push(score)
+        scores.push(score)
 
-      if (scores.length > 0) {
-        resolve(scores)
-      } else {
-        reject(new Error('处理成绩出错'))
-      }
-    })
+        if (scores.length > 0) {
+          resolve(scores)
+        } else {
+          reject(new Error('处理成绩出错'))
+        }
+      })
   })
 }
