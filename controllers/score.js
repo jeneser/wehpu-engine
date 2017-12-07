@@ -86,6 +86,9 @@ exports.score = function (req, res, next) {
   Promise
     .all([fromDb, fromUrp])
     .then(data => {
+      logger.info(fromDb)
+      logger.info('-------')
+      logger.info(fromUrp)
       // 合并结果
       return mergArray(data[0], data[1])
     })
