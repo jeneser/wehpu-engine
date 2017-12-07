@@ -39,7 +39,8 @@ exports.score = function (req, res, next) {
         openId: openId
       }))
       .then(doc => {
-        if (doc && doc.scores && doc.term === config.calendar.currentTerm) {
+        logger.info(doc)
+        if (doc && doc.scores.length && doc.term === config.calendar.currentTerm) {
           resolve(doc.scores)
         } else {
           resolve([])
@@ -85,12 +86,12 @@ exports.score = function (req, res, next) {
 
   Promise
     .all([fromDb, fromUrp])
-    .then(data => {
-      logger.info(fromDb)
+    .then(([db, urp]) => {
+      logger.info(db)
       logger.info('-------')
-      logger.info(fromUrp)
+      logger.info(urp)
       // 合并结果
-      return mergArray(data[0], data[1])
+      return mergArray(db, urp, 'name')
     })
     // 持久化
     .then(data => {
@@ -109,7 +110,7 @@ exports.score = function (req, res, next) {
     })
     // 返回结果
     .then(doc => {
-      if (doc && doc.scores) {
+      if (doc && doc.scores.length) {
         return res.status(200).json({
           statusCode: 200,
           errMsg: '成绩查询成功',
