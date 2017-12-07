@@ -138,10 +138,17 @@ exports.repair = function (req, res, next) {
     })
     .then(data => {
       logger.info(data)
-      return res.status(201).json({
-        statusCode: 201,
-        errMsg: '报修成功'
-      })
+      if (data.text === 'ok') {
+        return res.status(201).json({
+          statusCode: 201,
+          errMsg: '报修成功'
+        })
+      } else {
+        return res.status(500).json({
+          statusCode: 500,
+          errMsg: '内部错误'
+        })
+      }
     })
     .catch(err => {
       logger.error(err)
