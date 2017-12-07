@@ -5,7 +5,6 @@
  */
 
 var request = require('superagent')
-var cheerio = require('cheerio')
 
 var config = {
   // 登录地址
@@ -54,18 +53,8 @@ exports.login = function (params) {
         response: config.timeout
       })
       .redirects()
-      .then(() => {
-        return agent.get('http://houqin.hpu.edu.cn/rsp/my/wantrepair')
-      })
       .then(res => {
-        var $ = cheerio.load(res.text)
-        var pwdstr = $('#pwdstr').attr('value')
-
-        if (pwdstr) {
-          return Promise.resolve([agent, pwdstr])
-        } else {
-          return Promise.reject(new Error('登录失败'))
-        }
+        return Promise.resolve(agent)
       })
   } else {
     return Promise.reject(new Error('登录失败'))
